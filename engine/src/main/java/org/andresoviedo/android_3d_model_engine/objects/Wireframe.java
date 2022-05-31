@@ -10,20 +10,10 @@ import org.andresoviedo.util.io.IOUtils;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
+/**************************************************************************************************/
 public class Wireframe {
-
-    /**
-     * Builds a wireframe of the model by drawing all lines (3) of the triangles.
-     *
-     * @param objData the 3d model
-     * @return the 3d wireframe using indices
-     */
+    /**********************************************************************************************/
     public static Object3DData build(Object3DData objData) {
-
-        // TODO: create several wireframes elements instead of only 1 ?
-
-        // log event
         Log.i("Wireframe", "Building wireframe... " + objData);
 
         try {
@@ -31,18 +21,16 @@ public class Wireframe {
             final IntBuffer wireframeIndices;
 
             if (!objData.isDrawUsingArrays()) {
-
-                // get total indices
                 int totalIndex = 0;
+
                 for (Element element : objData.getElements()) {
                     totalIndex += element.getIndexBuffer().capacity();
                 }
+
                 Log.i("Wireframe", "Building wireframe... Total indices: " + totalIndex);
 
-                // we need 2 points x face side
                 wireframeIndices = IOUtils.createIntBuffer(totalIndex * 2);
 
-                // process all elements
                 vertexBuffer = objData.getVertexBuffer();
 
                 for (Element element : objData.getElements()) {
@@ -60,9 +48,9 @@ public class Wireframe {
                     }
                 }
             } else {
-                Log.i("Wireframe", "Building wireframe... Total vertices: " + objData.getVertexBuffer().capacity()/3);
+                Log.i("Wireframe", "Building wireframe... Total vertices: " + objData.getVertexBuffer().capacity() / 3);
                 vertexBuffer = objData.getVertexBuffer();
-                wireframeIndices = IOUtils.createIntBuffer(vertexBuffer.capacity()/3 * 2);
+                wireframeIndices = IOUtils.createIntBuffer(vertexBuffer.capacity() / 3 * 2);
                 Log.i("Wireframe", "Building wireframe... First vertex " + vertexBuffer.get(0) + "," + vertexBuffer.get(1) + "," + vertexBuffer.get(2));
                 for (int i = 0; i < vertexBuffer.capacity() / 3; i += 3) {
                     wireframeIndices.put(i);

@@ -5,34 +5,39 @@ import android.util.Log;
 import org.andresoviedo.util.io.IOUtils;
 
 import java.nio.FloatBuffer;
-
+/**************************************************************************************************/
 public class Menu extends Widget {
-
+    /**********************************************************************************************/
     private final static float padding = 0.1f;
+    /**********************************************************************************************/
     private final String[] items;
+    /**********************************************************************************************/
     private final int totalGlyphs;
-
+    /**********************************************************************************************/
     private Menu(String[] items) {
         super();
+
         this.items = items;
-        // count total chars
+
         int count = 0;
+
         for (String item : items) count += item.length();
-        // add border
+
         count++;
+
         this.totalGlyphs = count;
+
         this.init();
     }
-
+    /**********************************************************************************************/
     public static Menu build(String... items) {
         return new Menu(items);
     }
-
+    /**********************************************************************************************/
     void init() {
         try {
             if (items == null || items.length == 0) return;
 
-            // allocate buffers
             final FloatBuffer vertexBuffer = IOUtils.createNativeByteBuffer(totalGlyphs * 12 * 3 * 4).asFloatBuffer();
             final FloatBuffer colorBuffer = IOUtils.createNativeByteBuffer(totalGlyphs * 12 * 4 * 4)
                     .asFloatBuffer();
@@ -85,7 +90,6 @@ public class Menu extends Widget {
                 }
             }
 
-            // draw border
             vertexBuffer.put(0);
             vertexBuffer.put(0);
             vertexBuffer.put(0);
@@ -129,7 +133,7 @@ public class Menu extends Widget {
             Log.e("Menu",e.getMessage(), e);
         }
     }
-
+    /**********************************************************************************************/
     @Override
     public void toggleVisible() {
         super.toggleVisible();

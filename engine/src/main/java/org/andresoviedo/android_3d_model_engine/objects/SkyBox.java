@@ -10,16 +10,10 @@ import org.andresoviedo.util.io.IOUtils;
 
 import java.io.IOException;
 import java.net.URI;
-
-/**
- * Skyboxes downloaded from:
- * <p>
- * https://learnopengl.com/Advanced-OpenGL/Cubemaps
- * https://github.com/mobialia/jmini3d
- */
+/**************************************************************************************************/
 public class SkyBox {
-
-    private final static float VERTEX_DATA[] = {
+    /**********************************************************************************************/
+    private final static float[] VERTEX_DATA = {
             // positions
             -1.0f, 1.0f, -1.0f,
             -1.0f, -1.0f, -1.0f,
@@ -66,15 +60,17 @@ public class SkyBox {
 
     static {
 
-        for (int i=0; i<VERTEX_DATA.length; i++){
+        for (int i = 0; i < VERTEX_DATA.length; i++) {
             VERTEX_DATA[i] *= 1500;
         }
     }
 
+    /**********************************************************************************************/
     public final URI[] images;
-
+    /**********************************************************************************************/
     private CubeMap cubeMap = null;
 
+    /**********************************************************************************************/
     public SkyBox(URI[] images) throws IOException {
         if (images == null || images.length != 6)
             throw new IllegalArgumentException("skybox must contain exactly 6 faces");
@@ -82,6 +78,7 @@ public class SkyBox {
         this.cubeMap = getCubeMap();
     }
 
+    /**********************************************************************************************/
     public CubeMap getCubeMap() throws IOException {
         if (cubeMap != null) {
             return cubeMap;
@@ -98,11 +95,7 @@ public class SkyBox {
         return cubeMap;
     }
 
-    /**
-     * skybox downloaded from https://github.com/mobialia/jmini3d
-     *
-     * @return
-     */
+    /**********************************************************************************************/
     public static SkyBox getSkyBox2() {
         try {
             return new SkyBox(new URI[]{
@@ -117,11 +110,7 @@ public class SkyBox {
         }
     }
 
-    /**
-     * skybox downloaded from https://learnopengl.com/Advanced-OpenGL/Cubemaps
-     *
-     * @return
-     */
+    /**********************************************************************************************/
     public static SkyBox getSkyBox1() {
         try {
             return new SkyBox(new URI[]{
@@ -136,12 +125,12 @@ public class SkyBox {
         }
     }
 
+    /**********************************************************************************************/
     public static Object3DData build(SkyBox skyBox) throws IOException {
-
         Object3DData ret = new Object3DData(IOUtils.createFloatBuffer(VERTEX_DATA.length).put(VERTEX_DATA)).setId("skybox");
+
         ret.setDrawMode(GLES20.GL_TRIANGLES);
         ret.getMaterial().setTextureId(skyBox.getCubeMap().getTextureId());
-
 
         Log.i("SkyBox", "Skybox : " + ret.getDimensions());
 

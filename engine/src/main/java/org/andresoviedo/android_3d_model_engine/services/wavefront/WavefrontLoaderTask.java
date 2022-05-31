@@ -9,19 +9,14 @@ import org.andresoviedo.android_3d_model_engine.services.LoaderTask;
 
 import java.net.URI;
 import java.util.List;
-
-/**
- * Wavefront loader implementation
- *
- * @author andresoviedo
- */
-
+/**************************************************************************************************/
 public class WavefrontLoaderTask extends LoaderTask {
-
+    /**********************************************************************************************/
     public WavefrontLoaderTask(final Activity parent, final URI uri, final LoadListener callback) {
         super(parent, uri, callback);
     }
 
+    /**********************************************************************************************/
     @Override
     protected List<Object3DData> build() {
 
@@ -34,6 +29,7 @@ public class WavefrontLoaderTask extends LoaderTask {
         return load;
     }
 
+    /**********************************************************************************************/
     @Override
     public void onProgress(String progress) {
         super.publishProgress(progress);

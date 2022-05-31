@@ -6,9 +6,9 @@ import org.andresoviedo.android_3d_model_engine.model.Object3DData;
 import org.andresoviedo.util.io.IOUtils;
 
 import java.nio.FloatBuffer;
-
+/**************************************************************************************************/
 public class Grid {
-
+    /**********************************************************************************************/
     public static Object3DData build(float xStart, float yStart, float zStart, float xEnd, float yEnd, float zEnd,
                                      float step) {
         int nbLines = (int) ((xEnd - xStart) / step) + 1 + (int) ((zEnd - zStart) / step) + 1 + (int) ((yEnd -

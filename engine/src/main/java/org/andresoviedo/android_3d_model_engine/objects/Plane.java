@@ -1,18 +1,11 @@
 package org.andresoviedo.android_3d_model_engine.objects;
 
 import org.andresoviedo.android_3d_model_engine.model.Object3DData;
-import org.andresoviedo.android_3d_model_engine.services.collada.entities.MeshData;
-import org.andresoviedo.android_3d_model_engine.util.EarCut;
-
-import java.util.ArrayList;
-import java.util.List;
-
+/**************************************************************************************************/
 public class Plane {
-
-    /* Input should be an array of rings, where the first is outer ring and others are holes; each ring is an array of pofloats, where each pofloat is of the [x, y] form. */
+    /**********************************************************************************************/
     static final float[][][] lExample = new float[][][]{new float[][]{new float[]{10, 0}, new float[]{0, 50}, new float[]{60, 60}, new float[]{70, 10}}};
-
-    /* A very pretty letter w. (Font: Pacifico.ttf) */
+    /**********************************************************************************************/
     static final float[][][] lLetterW = new float[][][]{new float[][]{new float[]{864, 1542},
             new float[]{859, 1499},
             new float[]{847, 1441},
@@ -217,8 +210,7 @@ public class Plane {
             new float[]{857, 1589},
             new float[]{862, 1568},
             new float[]{864, 1542},}};
-
-    /* The course insides of the letter O. Font: Sans.ttf. (This is missing inside and outside Bezier curve data, it is used here to demonstrate hole processing.) */
+    /**********************************************************************************************/
     static final float[][][] lLetterO = new float[][][]{new float[][]{new float[]{1436, 733},
             new float[]{1392, 421},
             new float[]{1262, 182},
@@ -254,8 +246,7 @@ public class Plane {
             new float[]{240, 1046},
             new float[]{240, 733},
     }};
-
-    /* The course insides of the letter O. Font: Sans.ttf. (This is missing inside and outside Bezier curve data, it is used here to demonstrate hole processing.) */
+    /**********************************************************************************************/
     static final float[][][] lLetter8 = new float[][][]{new float[][]{new float[]{582, 1487},
             new float[]{749, 1463},
             new float[]{881, 1392},
@@ -326,27 +317,8 @@ public class Plane {
             new float[]{726, 1397},
             new float[]{580, 1397},},};
 
-
+    /**********************************************************************************************/
     public static Object3DData buildPlaneWitHoles() {
-        /*List<float[][]> lTriangleList = Earcut.earcut(lLetterW, true);
-        lTriangleList = EarCut.earcut(lLetterO, true);
-        lTriangleList = EarCut.earcut(lExample, true);
-        lTriangleList = EarCut.earcut(lLetter8, true);
-
-        List<float[]> vertices = new ArrayList<>();
-
-        for (int i = 0; i < lTriangleList.size(); i++) {
-            final float[][] lCurrentTriangle = lTriangleList.get(i);
-            System.out.println("[ " + lCurrentTriangle[0][0] + "," + lCurrentTriangle[0][1] + "] " + "[ " + lCurrentTriangle[1][0] + "," + lCurrentTriangle[1][1] + "] " + "[ " + lCurrentTriangle[2][0] + "," + lCurrentTriangle[2][1] + "] ");
-            vertices.add(new float[]{lCurrentTriangle[0][0],lCurrentTriangle[0][1],50});
-            vertices.add(new float[]{lCurrentTriangle[1][0],lCurrentTriangle[1][1],50});
-            vertices.add(new float[]{lCurrentTriangle[2][0],lCurrentTriangle[2][1],50});
-        }
-
-        MeshData.Builder builder = new MeshData.Builder();
-        builder.vertices(vertices);
-        MeshData build = builder.build();
-        return new Object3DData(build.getVertexBuffer());*/
         return null;
     }
 }

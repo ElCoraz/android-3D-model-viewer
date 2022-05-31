@@ -7,18 +7,19 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-
+/**************************************************************************************************/
 public class AndroidURLConnection extends URLConnection {
-
+    /**********************************************************************************************/
     private InputStream stream;
 
+    /**********************************************************************************************/
     public AndroidURLConnection(URL url) {
         super(url);
     }
 
+    /**********************************************************************************************/
     @Override
-    public void connect() throws IOException
-    {
+    public void connect() throws IOException {
         if (stream == null) {
             try {
                 stream = ContentUtils.getInputStream(url.toURI());
@@ -29,6 +30,7 @@ public class AndroidURLConnection extends URLConnection {
         }
     }
 
+    /**********************************************************************************************/
     @Override
     public InputStream getInputStream() throws IOException {
         connect();

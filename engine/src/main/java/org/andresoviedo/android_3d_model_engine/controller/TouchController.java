@@ -13,88 +13,93 @@ import org.andresoviedo.util.event.EventListener;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
-
+/**************************************************************************************************/
 public class TouchController {
-
+	/**********************************************************************************************/
 	private static final String TAG = TouchController.class.getName();
-
+	/**********************************************************************************************/
 	private static final int TOUCH_STATUS_ZOOMING_CAMERA = 1;
 	private static final int TOUCH_STATUS_ROTATING_CAMERA = 4;
 	private static final int TOUCH_STATUS_MOVING_WORLD = 5;
-
-	// constants
+	/**********************************************************************************************/
 	private int width;
 	private int height;
-
-	// variables
+	/**********************************************************************************************/
 	private final List<EventListener> listeners = new ArrayList<>();
-
+	/**********************************************************************************************/
 	private float x1 = Float.MIN_VALUE;
-    private float y1 = Float.MIN_VALUE;
-    private float x2 = Float.MIN_VALUE;
-    private float y2 = Float.MIN_VALUE;
-    private float dx1 = Float.MIN_VALUE;
-    private float dy1 = Float.MIN_VALUE;
-    private float dx2 = Float.MIN_VALUE;
-    private float dy2 = Float.MIN_VALUE;
-
-    private float length = Float.MIN_VALUE;
-    private float previousLength = Float.MIN_VALUE;
-    private float currentPress1 = Float.MIN_VALUE;
-    private float currentPress2 = Float.MIN_VALUE;
-
-    private float rotation = 0;
-    private int currentSquare = Integer.MIN_VALUE;
-
-    private boolean isOneFixedAndOneMoving = false;
-    private boolean fingersAreClosing = false;
-    private boolean isRotating = false;
-
-    private boolean gestureChanged = false;
+	private float y1 = Float.MIN_VALUE;
+	private float x2 = Float.MIN_VALUE;
+	private float y2 = Float.MIN_VALUE;
+	private float dx1 = Float.MIN_VALUE;
+	private float dy1 = Float.MIN_VALUE;
+	private float dx2 = Float.MIN_VALUE;
+	private float dy2 = Float.MIN_VALUE;
+	/**********************************************************************************************/
+	private float length = Float.MIN_VALUE;
+	private float previousLength = Float.MIN_VALUE;
+	private float currentPress1 = Float.MIN_VALUE;
+	private float currentPress2 = Float.MIN_VALUE;
+	/**********************************************************************************************/
+	private float rotation = 0;
+	/**********************************************************************************************/
+	private int currentSquare = Integer.MIN_VALUE;
+	/**********************************************************************************************/
+	private boolean isOneFixedAndOneMoving = false;
+	private boolean fingersAreClosing = false;
+	private boolean isRotating = false;
+	/**********************************************************************************************/
+	private boolean gestureChanged = false;
 	private boolean moving = false;
 	private boolean simpleTouch = false;
 	private long lastActionTime;
 	private int touchDelay = -2;
 	private int touchStatus = -1;
-
+	/**********************************************************************************************/
 	private float previousX1;
 	private float previousY1;
 	private float previousX2;
 	private float previousY2;
-    private float[] previousVector = new float[4];
-    private float[] vector = new float[4];
-    private float[] rotationVector = new float[4];
+	/**********************************************************************************************/
+	private float[] previousVector = new float[4];
+	private float[] vector = new float[4];
+	private float[] rotationVector = new float[4];
+	/**********************************************************************************************/
 	private float previousRotationSquare;
 
+	/**********************************************************************************************/
 	public TouchController(Activity parent) {
 		super();
 		try {
 			if (!AndroidUtils.supportsMultiTouch(parent.getPackageManager())) {
-				Log.w("ModelActivity","Multitouch not supported. Some app features may not be available");
+				Log.w("ModelActivity", "Multitouch not supported. Some app features may not be available");
 			} else {
-				Log.i("ModelActivity","Initializing TouchController...");
+				Log.i("ModelActivity", "Initializing TouchController...");
 			}
-		}catch (Exception e){
-			Toast.makeText(parent, "Error loading Touch Controller:\n" +e.getMessage(), Toast.LENGTH_LONG).show();
+		} catch (Exception e) {
+			Toast.makeText(parent, "Error loading Touch Controller:\n" + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 
-	public void setSize(int width, int height){
+	/**********************************************************************************************/
+	public void setSize(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
 
-	public void addListener(EventListener listener){
+	/**********************************************************************************************/
+	public void addListener(EventListener listener) {
 		this.listeners.add(listener);
 	}
 
-	private void fireEvent(EventObject eventObject){
+	/**********************************************************************************************/
+	private void fireEvent(EventObject eventObject) {
 		AndroidUtils.fireEvent(listeners, eventObject);
 	}
 
+	/**********************************************************************************************/
 	public boolean onTouchEvent(MotionEvent motionEvent) {
-
-		Log.v("TouchController","Processing MotionEvent...");
+		Log.v("TouchController", "Processing MotionEvent...");
 		final int pointerCount = motionEvent.getPointerCount();
 
 		switch (motionEvent.getActionMasked()) {
@@ -103,7 +108,6 @@ public class TouchController {
 			case MotionEvent.ACTION_POINTER_UP:
 			case MotionEvent.ACTION_HOVER_EXIT:
 			case MotionEvent.ACTION_OUTSIDE:
-				// this to handle "1 simple touch"
 				if (lastActionTime > SystemClock.uptimeMillis() - 250) {
 					Log.v(TAG, "Simple touch !");
 					simpleTouch = true;
@@ -134,7 +138,6 @@ public class TouchController {
 				Log.w(TAG, "Unknown state: " + motionEvent.getAction());
 				gestureChanged = true;
 		}
-
 
 		if (pointerCount == 1) {
 			x1 = motionEvent.getX();
@@ -196,7 +199,6 @@ public class TouchController {
 				rotation = 360;
 			}
 
-			// gesture detection
 			isOneFixedAndOneMoving = ((dx1 + dy1) == 0) != (((dx2 + dy2) == 0));
 			fingersAreClosing = !isOneFixedAndOneMoving && (Math.abs(dx1 + dx2) < 10 && Math.abs(dy1 + dy2) < 10);
 			isRotating = !isOneFixedAndOneMoving && (dx1 != 0 && dy1 != 0 && dx2 != 0 && dy2 != 0)
@@ -208,7 +210,6 @@ public class TouchController {
 		}
 
 		if (touchDelay > 1) {
-			// INFO: Process gesture
 			if (pointerCount == 1 && currentPress1 > 4.0f) {
 			} else if (pointerCount == 1) {
 				fireEvent(new TouchEvent(this, TouchEvent.MOVE, width, height, previousX1, previousY1,
@@ -245,4 +246,3 @@ public class TouchController {
 		return true;
 	}
 }
-

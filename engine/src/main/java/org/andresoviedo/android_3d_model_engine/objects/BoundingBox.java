@@ -7,22 +7,21 @@ import org.andresoviedo.android_3d_model_engine.model.Dimensions;
 import org.andresoviedo.android_3d_model_engine.model.Object3DData;
 import org.andresoviedo.util.io.IOUtils;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
+/**************************************************************************************************/
 public final class BoundingBox {
-
+    /**********************************************************************************************/
     public static Object3DData build(Object3DData obj) {
 
-        Log.i("BoundingBox","Building bounding box... "+obj);
+        Log.i("BoundingBox", "Building bounding box... " + obj);
 
         Dimensions box = obj.getDimensions();
 
         final FloatBuffer vertices = IOUtils.createFloatBuffer(8 * 3);
+
         //@formatter:off
         vertices.put(box.getMin()[0]).put(box.getMin()[1]).put(box.getMin()[2]);  // down-left (far)
         vertices.put(box.getMin()[0]).put(box.getMax()[1]).put(box.getMin()[2]);  // up-left (far)

@@ -1,32 +1,29 @@
 package org.andresoviedo.android_3d_model_engine.model;
 
-import org.andresoviedo.util.math.Math3DUtils;
+import androidx.annotation.NonNull;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
-
+/**************************************************************************************************/
 public class Dimensions {
-
-    // edge coordinates
-    private float leftPt = Float.MAX_VALUE, rightPt = -Float.MAX_VALUE; // on x-axis
-    private float topPt = -Float.MAX_VALUE, bottomPt = Float.MAX_VALUE; // on y-axis
-    private float farPt = Float.MAX_VALUE, nearPt = -Float.MAX_VALUE; // on z-axis
-
-    // min max center
-    private final float[] center = new float[]{0,0,0};
-    private final float[] min = new float[]{0,0,0};
-    private final float[] max = new float[]{0,0,0};
-
-    // whether at least 1 vertex was processed
+    /**********************************************************************************************/
+    private float leftPt = Float.MAX_VALUE, rightPt = -Float.MAX_VALUE;
+    private float topPt = -Float.MAX_VALUE, bottomPt = Float.MAX_VALUE;
+    private float farPt = Float.MAX_VALUE, nearPt = -Float.MAX_VALUE;
+    /**********************************************************************************************/
+    private final float[] center = new float[]{0, 0, 0};
+    private final float[] min = new float[]{0, 0, 0};
+    private final float[] max = new float[]{0, 0, 0};
+    /**********************************************************************************************/
     private boolean initialized = false;
+    /**********************************************************************************************/
+    private static final DecimalFormat df = new DecimalFormat("0.##");
 
-    // for reporting
-    private static final DecimalFormat df = new DecimalFormat("0.##"); // 2 dp
-
+    /**********************************************************************************************/
     public Dimensions() {
-        //();
     }
 
+    /**********************************************************************************************/
     public Dimensions(float leftPt, float rightPt, float topPt, float bottomPt, float nearPt, float farPt) {
         this.leftPt = leftPt;
         this.rightPt = rightPt;
@@ -37,15 +34,18 @@ public class Dimensions {
         refresh();
     }
 
+    /**********************************************************************************************/
     public float[] getMin() {
         return min;
     }
 
+    /**********************************************************************************************/
     public float[] getMax() {
         return max;
     }
 
-    public void update(float x, float y, float z){
+    /**********************************************************************************************/
+    public void update(float x, float y, float z) {
         if (x > rightPt)
             rightPt = x;
         if (x < leftPt)
@@ -64,6 +64,7 @@ public class Dimensions {
         refresh();
     }
 
+    /**********************************************************************************************/
     private void refresh() {
         this.min[0] = getLeftPt();
         this.min[1] = getBottomPt();
@@ -80,20 +81,22 @@ public class Dimensions {
         initialized = true;
     }
 
-    // ------------- use the edge coordinates ----------------------------
-
+    /**********************************************************************************************/
     public float getWidth() {
         return Math.abs(getRightPt() - getLeftPt());
     }
 
+    /**********************************************************************************************/
     public float getHeight() {
         return Math.abs(getTopPt() - getBottomPt());
     }
 
+    /**********************************************************************************************/
     public float getDepth() {
         return Math.abs(getNearPt() - getFarPt());
     }
 
+    /**********************************************************************************************/
     public float getLargest() {
         float height = getHeight();
         float depth = getDepth();
@@ -107,78 +110,87 @@ public class Dimensions {
         return largest;
     }
 
-    private float getRightPt(){
+    /**********************************************************************************************/
+    private float getRightPt() {
         if (!initialized) return 0;
         return rightPt;
     }
 
-    private float getLeftPt(){
+    /**********************************************************************************************/
+    private float getLeftPt() {
         if (!initialized) return 0;
         return leftPt;
     }
 
-    private float getTopPt(){
+    /**********************************************************************************************/
+    private float getTopPt() {
         if (!initialized) return 0;
         return topPt;
     }
 
-    private float getBottomPt(){
+    /**********************************************************************************************/
+    private float getBottomPt() {
         if (!initialized) return 0;
         return bottomPt;
     }
 
-    private float getNearPt(){
+    /**********************************************************************************************/
+    private float getNearPt() {
         if (!initialized) return 0;
         return nearPt;
     }
 
-    private float getFarPt(){
+    /**********************************************************************************************/
+    private float getFarPt() {
         if (!initialized) return 0;
         return farPt;
     }
 
-    /**
-     * @return the center of the bounding box
-     */
+    /**********************************************************************************************/
     public float[] getCenter() {
         return center;
     }
 
+    /**********************************************************************************************/
     public float[] getCornerLeftTopNearVector() {
         return new float[]{getLeftPt(), getTopPt(), getNearPt(), 1};
     }
 
+    /**********************************************************************************************/
     public float[] getCornerRightBottomFar() {
         return new float[]{getRightPt(), getBottomPt(), getFarPt(), 1};
     }
 
+    /**********************************************************************************************/
     public Dimensions translate(float[] diff) {
-        return new Dimensions(leftPt+diff[0],rightPt+diff[0],
-                topPt+diff[1],bottomPt+diff[1],
-                nearPt+diff[2],farPt+diff[2]);
+        return new Dimensions(leftPt + diff[0], rightPt + diff[0],
+                topPt + diff[1], bottomPt + diff[1],
+                nearPt + diff[2], farPt + diff[2]);
     }
 
-    public Dimensions scale(float scale){
-        return new Dimensions(leftPt*scale,rightPt*scale,
-                topPt*scale,bottomPt*scale,
-                nearPt*scale,farPt*scale);
+    /**********************************************************************************************/
+    public Dimensions scale(float scale) {
+        return new Dimensions(leftPt * scale, rightPt * scale,
+                topPt * scale, bottomPt * scale,
+                nearPt * scale, farPt * scale);
     }
 
+    /**********************************************************************************************/
+    @NonNull
     @Override
     public String toString() {
         return "Dimensions{" +
                 "min=" + Arrays.toString(min) +
                 ", max=" + Arrays.toString(max) +
                 ", center=" + Arrays.toString(center) +
-                ", width=" + getWidth()+
-                ", height="+ getHeight()+
-                ", depth="+getDepth()+
+                ", width=" + getWidth() +
+                ", height=" + getHeight() +
+                ", depth=" + getDepth() +
                 '}';
     }
 
+    /**********************************************************************************************/
     public float getRelationTo(Dimensions other) {
         return this.getLargest() / other.getLargest();
     }
-
-
 }

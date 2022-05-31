@@ -35,37 +35,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
+/**************************************************************************************************/
 public class MenuActivity extends ListActivity {
-
+    /**********************************************************************************************/
     private static final URL REPO_URL = createURL("https://github.com/the3deers/android-3D-model-viewer/raw/master/models/index");
+    /**********************************************************************************************/
     private static final int REQUEST_READ_EXTERNAL_STORAGE = 1000;
     private static final int REQUEST_INTERNET_ACCESS = 1001;
     private static final int REQUEST_READ_CONTENT_PROVIDER = 1002;
-
+    /**********************************************************************************************/
     private static final int REQUEST_CODE_LOAD_MODEL = 1101;
     private static final int REQUEST_CODE_OPEN_MATERIAL = 1102;
     private static final int REQUEST_CODE_OPEN_TEXTURE = 1103;
     private static final int REQUEST_CODE_ADD_FILES = 1200;
+    /**********************************************************************************************/
     private static final String SUPPORTED_FILE_TYPES_REGEX = "(?i).*\\.(obj|stl|dae|index)";
 
-
+    /**********************************************************************************************/
     private enum Action {
         LOAD_MODEL, CARGAR_MODELO, GITHUB, SETTINGS, HELP, AYUDA, ABOUT, ACERCA, EXIT, SALIR, UNKNOWN, DEMO
     }
 
-    /**
-     * Load file user data
-     */
+    /**********************************************************************************************/
     private Map<String, Object> loadModelParameters = new HashMap<>();
 
+    /**********************************************************************************************/
     private static URL createURL(String url) {
         try {
             return new URL(url);
-        } catch(MalformedURLException e){
+        } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
+
+    /**********************************************************************************************/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,17 +77,20 @@ public class MenuActivity extends ListActivity {
                 getResources().getStringArray(R.array.menu_items)));
     }
 
+    /**********************************************************************************************/
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         String selectedItem = (String) getListView().getItemAtPosition(position);
-        // Toast.makeText(getApplicationContext(), "Click ListItem '" + selectedItem + "'", Toast.LENGTH_LONG).show();
         String selectedAction = selectedItem.replace(' ', '_').toUpperCase(Locale.getDefault());
+
         Action action = Action.UNKNOWN;
+
         try {
             action = Action.valueOf(selectedAction);
         } catch (IllegalArgumentException ex) {
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
         }
+
         try {
             switch (action) {
                 case DEMO:
@@ -128,9 +134,9 @@ public class MenuActivity extends ListActivity {
         } catch (Exception ex) {
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
         }
-
     }
 
+    /**********************************************************************************************/
     private void loadModel() {
         ContentUtils.showListDialog(this, "File Provider", new String[]{"Samples", "Repository",
                 "Android Explorer", "File Explorer (Android <= 10)"}, (DialogInterface dialog, int which) -> {
@@ -147,31 +153,36 @@ public class MenuActivity extends ListActivity {
 
     }
 
+    /**********************************************************************************************/
     private void loadModelFromAssets() {
         AssetUtils.createChooserDialog(this, "Select file", null, "models", "(?i).*\\.(obj|stl|dae)",
                 (String file) -> {
                     if (file != null) {
                         ContentUtils.provideAssets(this);
-                        launchModelRendererActivity(Uri.parse("android://"+getPackageName()+"/assets/" + file));
+                        launchModelRendererActivity(Uri.parse("android://" + getPackageName() + "/assets/" + file));
                     }
                 });
     }
 
+    /**********************************************************************************************/
     private void loadModelFromRepository(URL url) {
         if (AndroidUtils.checkPermission(this, Manifest.permission.INTERNET, REQUEST_INTERNET_ACCESS)) {
             new LoadRepoIndexTask().execute(url);
         }
     }
 
+    /**********************************************************************************************/
     class LoadRepoIndexTask extends AsyncTask<URL, Integer, List<String>> {
-
+        /******************************************************************************************/
         private final ProgressDialog dialog;
         private AlertDialog.Builder chooser;
 
+        /******************************************************************************************/
         public LoadRepoIndexTask() {
             this.dialog = new ProgressDialog(MenuActivity.this);
         }
 
+        /******************************************************************************************/
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -180,21 +191,19 @@ public class MenuActivity extends ListActivity {
             this.dialog.show();
         }
 
+        /******************************************************************************************/
         @Override
         protected List<String> doInBackground(URL... urls) {
-
-            // model files
             final List<String> files = ContentUtils.readLines(urls[0].toString());
 
-            // optional icons
             Map<String, byte[]> icons = null;
+
             try {
-                icons = ContentUtils.readFiles(new URL(urls[0].toString()+".icons.zip"));
+                icons = ContentUtils.readFiles(new URL(urls[0].toString() + ".icons.zip"));
             } catch (MalformedURLException ex) {
                 Log.e("MenuActivity", ex.getMessage(), ex);
             }
 
-            // chooser
             chooser = ContentUtils.createChooserDialog(MenuActivity.this, "Select file", null,
                     files, icons, SUPPORTED_FILE_TYPES_REGEX,
                     (String file) -> {
@@ -213,6 +222,7 @@ public class MenuActivity extends ListActivity {
             return files;
         }
 
+        /******************************************************************************************/
         @Override
         protected void onPostExecute(List<String> strings) {
             if (dialog.isShowing()) {
@@ -227,8 +237,8 @@ public class MenuActivity extends ListActivity {
         }
     }
 
+    /**********************************************************************************************/
     private void loadModelFromSdCard() {
-        // check permission starting from android API 23 - Marshmallow
         if (AndroidUtils.checkPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_READ_EXTERNAL_STORAGE)) {
             FileUtils.createChooserDialog(this, "Select file", null, null, SUPPORTED_FILE_TYPES_REGEX,
                     (File file) -> {
@@ -241,8 +251,8 @@ public class MenuActivity extends ListActivity {
 
     }
 
+    /**********************************************************************************************/
     private void loadModelFromContentProvider() {
-        // check permission starting from android API 23 - Marshmallow
         if (AndroidUtils.checkPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_READ_CONTENT_PROVIDER)) {
             loadModelParameters.clear();
             ContentUtils.clearDocumentsProvided();
@@ -251,6 +261,7 @@ public class MenuActivity extends ListActivity {
         }
     }
 
+    /**********************************************************************************************/
     private void askForFile(int requestCode, String mimeType) {
         Intent target = ContentUtils.createGetContentIntent(mimeType);
         Intent intent = Intent.createChooser(target, "Select file");
@@ -261,6 +272,7 @@ public class MenuActivity extends ListActivity {
         }
     }
 
+    /**********************************************************************************************/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         ContentUtils.setThreadActivity(this);
@@ -290,26 +302,28 @@ public class MenuActivity extends ListActivity {
                         launchModelRendererActivity(getUserSelectedModel());
                         break;
                     }
+
                     String filename = (String) loadModelParameters.get("file");
+
                     ContentUtils.addUri(filename, data.getData());
-                    // check if material references texture file
+
                     String textureFile = WavefrontLoader.getTextureFile(data.getData());
+
                     if (textureFile == null) {
                         launchModelRendererActivity(getUserSelectedModel());
                         break;
                     }
-                    ContentUtils.showDialog(this, "Select texture file", "This model references a " +
-                                    "texture file (" + textureFile + "). Please select it", "OK",
-                            "Cancel", (DialogInterface dialog, int which) -> {
-                                switch (which) {
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        launchModelRendererActivity(getUserSelectedModel());
-                                        break;
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        loadModelParameters.put("file", textureFile);
-                                        askForFile(REQUEST_CODE_OPEN_TEXTURE, "image/*");
-                                }
-                            });
+
+                    ContentUtils.showDialog(this, "Select texture file", "This model references a " + "texture file (" + textureFile + "). Please select it", "OK", "Cancel", (DialogInterface dialog, int which) -> {
+                        switch (which) {
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                launchModelRendererActivity(getUserSelectedModel());
+                                break;
+                            case DialogInterface.BUTTON_POSITIVE:
+                                loadModelParameters.put("file", textureFile);
+                                askForFile(REQUEST_CODE_OPEN_TEXTURE, "image/*");
+                        }
+                    });
                     break;
                 case REQUEST_CODE_OPEN_TEXTURE:
                     if (resultCode != RESULT_OK || data.getData() == null) {
@@ -321,26 +335,24 @@ public class MenuActivity extends ListActivity {
                     launchModelRendererActivity(getUserSelectedModel());
                     break;
                 case REQUEST_CODE_ADD_FILES:
-
-                    // get list of files to prompt to user
                     List<String> files = (List<String>) loadModelParameters.get("files");
+
                     if (files == null || files.isEmpty()) {
                         launchModelRendererActivity(getUserSelectedModel());
                         break;
                     }
 
-                    // save picked up file
                     final String current = files.remove(0);
+
                     ContentUtils.addUri(current, data.getData());
 
-                    // no more files then load model...
                     if (files.isEmpty()) {
                         launchModelRendererActivity(getUserSelectedModel());
                         break;
                     }
-                    ;
 
                     final String next = files.get(0);
+
                     ContentUtils.showDialog(this, "Select file", "Please select file " + next, "OK",
                             "Cancel", (DialogInterface dialog, int which) -> {
                                 switch (which) {
@@ -360,12 +372,10 @@ public class MenuActivity extends ListActivity {
         }
     }
 
+    /**********************************************************************************************/
     private void onLoadModel(Uri uri) throws IOException {
-
-        // save user selected model
         loadModelParameters.put("model", uri);
 
-        // detect model type
         if (uri.toString().toLowerCase().endsWith(".obj")) {
             askForRelatedFiles(0);
         } else if (uri.toString().toLowerCase().endsWith(".stl")) {
@@ -373,9 +383,7 @@ public class MenuActivity extends ListActivity {
         } else if (uri.toString().toLowerCase().endsWith(".dae")) {
             askForRelatedFiles(2);
         } else {
-            // no model type from filename, ask user...
-            ContentUtils.showListDialog(this, "Select type", new String[]{"Wavefront (*.obj)", "Stereolithography (*" +
-                    ".stl)", "Collada (*.dae)"}, (dialog, which) -> {
+            ContentUtils.showListDialog(this, "Select type", new String[]{"Wavefront (*.obj)", "Stereolithography (*" + ".stl)", "Collada (*.dae)"}, (dialog, which) -> {
                 try {
                     askForRelatedFiles(which);
                 } catch (IOException e) {
@@ -385,20 +393,23 @@ public class MenuActivity extends ListActivity {
         }
     }
 
+    /**********************************************************************************************/
     private Uri getUserSelectedModel() {
         return (Uri) loadModelParameters.get("model");
     }
 
+    /**********************************************************************************************/
     private void askForRelatedFiles(int modelType) throws IOException {
         loadModelParameters.put("type", modelType);
         switch (modelType) {
-            case 0: // obj
-                // check if model references material file
+            case 0:
                 String materialFile = WavefrontLoader.getMaterialLib(getUserSelectedModel());
+
                 if (materialFile == null) {
                     launchModelRendererActivity(getUserSelectedModel());
                     break;
                 }
+
                 ContentUtils.showDialog(this, "Select material file", "This model references a " +
                                 "material file (" + materialFile + "). Please select it", "OK",
                         "Cancel", (DialogInterface dialog, int which) -> {
@@ -412,22 +423,23 @@ public class MenuActivity extends ListActivity {
                             }
                         });
                 break;
-            case 1: // stl
+            case 1:
                 launchModelRendererActivity(getUserSelectedModel());
+
                 break;
-            case 2: // dae
+            case 2:
                 final List<String> images = ColladaLoader.getImages(ContentUtils.getInputStream(getUserSelectedModel()));
+
                 if (images == null || images.isEmpty()) {
                     launchModelRendererActivity(getUserSelectedModel());
                 } else {
-
                     Log.i("MenuActivity", "Prompting user to choose files from picker...");
 
                     loadModelParameters.put("files", images);
+
                     String file = images.get(0);
 
-                    ContentUtils.showDialog(this, "Select texture", "This model references a " +
-                                    " file (" + file + "). Please select it", "OK",
+                    ContentUtils.showDialog(this, "Select texture", "This model references a " + " file (" + file + "). Please select it", "OK",
                             "Cancel", (DialogInterface dialog, int which) -> {
                                 switch (which) {
                                     case DialogInterface.BUTTON_NEGATIVE:
@@ -442,6 +454,7 @@ public class MenuActivity extends ListActivity {
         }
     }
 
+    /**********************************************************************************************/
     private void launchModelRendererActivity(Uri uri) {
         Log.i("Menu", "Launching renderer for '" + uri + "'");
         Intent intent = new Intent(getApplicationContext(), ModelActivity.class);
@@ -449,7 +462,6 @@ public class MenuActivity extends ListActivity {
             URI.create(uri.toString());
             intent.putExtra("uri", uri.toString());
         } catch (Exception e) {
-            // info: filesystem url may contain spaces, therefore we re-encode URI
             try {
                 intent.putExtra("uri", new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), uri.getQuery(), uri.getFragment()).toString());
             } catch (URISyntaxException ex) {
@@ -457,12 +469,12 @@ public class MenuActivity extends ListActivity {
                 return;
             }
         }
+
         intent.putExtra("immersiveMode", "false");
 
-        // content provider case
         if (!loadModelParameters.isEmpty()) {
             intent.putExtra("type", loadModelParameters.get("type").toString());
-            //intent.putExtra("backgroundColor", "0.25 0.25 0.25 1");
+
             loadModelParameters.clear();
         }
 

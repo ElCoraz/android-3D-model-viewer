@@ -7,76 +7,61 @@ import org.andresoviedo.util.math.Math3DUtils;
 import org.andresoviedo.util.math.Quaternion;
 
 import java.util.Arrays;
-
-/**
- * Represents the local bone-space transform of a joint at a certain keyframe
- * during an animation. This includes the position and rotation of the joint,
- * relative to the parent joint (for the root joint it's relative to the model's
- * origin, seeing as the root joint has no parent). The transform is stored as a
- * position vector and a quaternion (rotation) so that these values can be
- * easily interpolated, a functionality that this class also provides.
- *
- * @author andresoviedo
- */
-
+/**************************************************************************************************/
 public class JointTransform {
-
-    // remember, this position and rotation are relative to the parent bone!
+    /**********************************************************************************************/
     private final float[] matrix;
     private final Quaternion qRotation;
-
-    // Transformation = L x R x S
+    /**********************************************************************************************/
     private final float[] calculatedMatrix;
     private Float[] scale;
     private Float[] rotation;
     private Float[] location;
-
-    // visibility transformation
+    /**********************************************************************************************/
     private boolean visible;
-
-    // FIXME: what's this?
+    /**********************************************************************************************/
     private Float[] rotation1;
     private Float[] rotation2;
-
-    // FIXME: what's this?
+    /**********************************************************************************************/
     private Float[] rotation2Location;
-
-    // cache
+    /**********************************************************************************************/
     private static final Float[] tempScale = new Float[3];
     private static final Float[] tempRotation = new Float[3];
     private static final Quaternion tempQRotation = new Quaternion();
     private static final Float[] tempLocation = new Float[3];
     private static final float[] tempMatrix = new float[16];
 
-
+    /**********************************************************************************************/
     public static JointTransform ofScale(Float[] scale) {
         return new JointTransform(scale, (Float[]) null, null);
     }
 
+    /**********************************************************************************************/
     public static JointTransform ofRotation(Float[] rotation) {
         return new JointTransform(null, rotation, null);
     }
 
+    /**********************************************************************************************/
     public static JointTransform ofLocation(Float[] location) {
         return new JointTransform(null, (Float[]) null, location);
     }
 
+    /**********************************************************************************************/
     static JointTransform ofNull() {
         return new JointTransform(new Float[]{1f, 1f, 1f}, new Float[3], new Float[3]);
     }
 
-
+    /**********************************************************************************************/
     public JointTransform(float[] matrix) {
         this.matrix = matrix;
         this.qRotation = Quaternion.fromMatrix(matrix);
 
         this.calculatedMatrix = null;
         this.scale = Math3DUtils.scaleFromMatrix(matrix);
-        this.rotation = new Float[]{0f, 0f, 0f};  // FIXME: extract euler rotation from matrix
+        this.rotation = new Float[]{0f, 0f, 0f};
         this.location = new Float[]{matrix[12], matrix[13], matrix[14]};
         this.visible = true;
 
-        // FIXME: what's this?
         this.rotation1 = new Float[]{0f, 0f, 0f};
         this.rotation2 = new Float[]{0f, 0f, 0f};
         this.rotation2Location = new Float[]{0f, 0f, 0f};
@@ -84,6 +69,7 @@ public class JointTransform {
         updateMatrix();
     }
 
+    /**********************************************************************************************/
     private JointTransform(Float[] scale, Float[] rotation, Float[] location) {
         this.matrix = null;
         this.qRotation = null;
@@ -98,6 +84,7 @@ public class JointTransform {
         updateMatrix();
     }
 
+    /**********************************************************************************************/
     private JointTransform(Float[] scale, Quaternion qRotation, Float[] location) {
         this.matrix = new float[16];
         this.qRotation = qRotation;
@@ -112,14 +99,17 @@ public class JointTransform {
         updateMatrix();
     }
 
+    /**********************************************************************************************/
     public Float[] getScale() {
         return scale;
     }
 
+    /**********************************************************************************************/
     public void setScale(float[] scale) {
         this.setScale(scale[0], scale[1], scale[2]);
     }
 
+    /**********************************************************************************************/
     public void setScale(float x, float y, float z) {
         if (this.scale == null) {
             this.scale = new Float[3];
@@ -130,10 +120,12 @@ public class JointTransform {
         updateMatrix();
     }
 
+    /**********************************************************************************************/
     boolean isComplete() {
         return matrix != null || isComplete(getScale()) && isComplete(getRotation()) && isComplete(getLocation());
     }
 
+    /**********************************************************************************************/
     private static boolean isComplete(Float[] array) {
         if (array == null) return false;
         for (Float aFloat : array) {
@@ -142,6 +134,7 @@ public class JointTransform {
         return true;
     }
 
+    /**********************************************************************************************/
     void complete(JointData jointData) {
         if (this.scale == null) {
             this.scale = new Float[]{1f, 1f, 1f};
@@ -182,76 +175,92 @@ public class JointTransform {
         }
     }
 
+    /**********************************************************************************************/
     public Float[] getRotation() {
         return rotation;
     }
 
+    /**********************************************************************************************/
     public Quaternion getQRotation() {
         return qRotation;
     }
 
+    /**********************************************************************************************/
     public Float[] getLocation() {
         return location;
     }
 
+    /**********************************************************************************************/
     public Float[] getRotation2() {
         return rotation2;
     }
 
+    /**********************************************************************************************/
     public Float[] getRotation2Location() {
         return rotation2Location;
     }
 
+    /**********************************************************************************************/
     public Float[] getRotation1() {
         return rotation1;
     }
 
+    /**********************************************************************************************/
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
+    /**********************************************************************************************/
     public boolean isVisible() {
         return visible;
     }
 
-    public boolean hasScaleX(){
+    /**********************************************************************************************/
+    public boolean hasScaleX() {
         return scale != null && scale[0] != null;
     }
 
-    public boolean hasScaleY(){
+    /**********************************************************************************************/
+    public boolean hasScaleY() {
         return scale != null && scale[1] != null;
     }
 
-    public boolean hasScaleZ(){
+    /**********************************************************************************************/
+    public boolean hasScaleZ() {
         return scale != null && scale[2] != null;
     }
 
-    public boolean hasRotationX(){
+    /**********************************************************************************************/
+    public boolean hasRotationX() {
         return rotation != null && rotation[0] != null;
     }
 
-    public boolean hasRotationY(){
+    /**********************************************************************************************/
+    public boolean hasRotationY() {
         return rotation != null && rotation[1] != null;
     }
 
-    public boolean hasRotationZ(){
+    /**********************************************************************************************/
+    public boolean hasRotationZ() {
         return rotation != null && rotation[2] != null;
     }
 
-    public boolean hasLocationX(){
+    /**********************************************************************************************/
+    public boolean hasLocationX() {
         return location != null && location[0] != null;
     }
 
-    public boolean hasLocationY(){
+    /**********************************************************************************************/
+    public boolean hasLocationY() {
         return location != null && location[1] != null;
     }
 
-
-    public boolean hasLocationZ(){
+    /**********************************************************************************************/
+    public boolean hasLocationZ() {
         return location != null && location[2] != null;
     }
 
-
+    /**********************************************************************************************/
     private static void add(Float[] result, Float[] extra) {
         if (extra[0] != null) {
             if (result[0] == null) result[0] = 0f;
@@ -267,6 +276,7 @@ public class JointTransform {
         }
     }
 
+    /**********************************************************************************************/
     public void addScale(Float[] extra) {
         if (this.scale == null) {
             this.scale = extra;
@@ -276,6 +286,7 @@ public class JointTransform {
         updateMatrix();
     }
 
+    /**********************************************************************************************/
     public void addRotation(Float[] extra) {
         if (this.rotation == null) {
             this.rotation = extra;
@@ -285,6 +296,7 @@ public class JointTransform {
         updateMatrix();
     }
 
+    /**********************************************************************************************/
     public void addLocation(Float[] extra) {
         if (this.location == null) {
             this.location = extra;
@@ -294,6 +306,7 @@ public class JointTransform {
         updateMatrix();
     }
 
+    /**********************************************************************************************/
     public float[] getMatrix() {
         if (matrix != null) {
             return matrix;
@@ -302,24 +315,7 @@ public class JointTransform {
         }
     }
 
-    /**
-     * Interpolates between two transforms based on the progression value. The
-     * result is a new transform which is part way between the two original
-     * transforms. The translation can simply be linearly interpolated, but the
-     * rotation interpolation is slightly more complex, using a method called
-     * "SLERP" to spherically-linearly interpolate between 2 quaternions
-     * (rotations). This gives a much much better result than trying to linearly
-     * interpolate between Euler rotations.
-     *
-     * @param scaleAX           - the previous transform
-     * @param scaleBX           - the next transform
-     * @param scaleProgressionX - a number between 0 and 1 indicating how far between the two
-     *                          transforms to interpolate. A progression value of 0 would
-     *                          return a transform equal to "frameA", a value of 1 would
-     *                          return a transform equal to "frameB". Everything else gives a
-     *                          transform somewhere in-between the two.
-     * @return the new interpolated Transformation
-     */
+    /**********************************************************************************************/
     static JointTransform ofInterpolation(JointTransform scaleAX, JointTransform scaleBX, float scaleProgressionX,
                                           JointTransform scaleAY, JointTransform scaleBY, float scaleProgressionY,
                                           JointTransform scaleAZ, JointTransform scaleBZ, float scaleProgressionZ,
@@ -355,6 +351,7 @@ public class JointTransform {
         }
     }
 
+    /**********************************************************************************************/
     static void interpolate(JointTransform frameA, JointTransform frameB, float progression, float[] ret) {
 
         interpolateVector(tempScale, frameA.scale, frameB.scale, progression);
@@ -394,21 +391,12 @@ public class JointTransform {
 
         }
 
-        // INFO: cleanup - otherwise next interpolation will have undefined results
-        tempScale[0]=tempScale[1]=tempScale[2]=null;
-        tempRotation[0]=tempRotation[1]=tempRotation[2]=null;
-        tempLocation[0]=tempLocation[1]=tempLocation[2]=null;
+        tempScale[0] = tempScale[1] = tempScale[2] = null;
+        tempRotation[0] = tempRotation[1] = tempRotation[2] = null;
+        tempLocation[0] = tempLocation[1] = tempLocation[2] = null;
     }
 
-    /**
-     * Linearly interpolates between two translations based on a "progression"
-     * value.
-     *
-     * @param start       - the start translation.
-     * @param end         - the end translation.
-     * @param progression - a value between 0 and 1 indicating how far to interpolate
-     *                    between the two translations.
-     */
+    /**********************************************************************************************/
     private static void interpolateVector(Float[] ret, Float[] start, Float[] end, float progression) {
         if (progression == 0) {
             if (ret[0] == null) ret[0] = start[0];
@@ -427,6 +415,7 @@ public class JointTransform {
         }
     }
 
+    /**********************************************************************************************/
     public void setLocation(float[] location) {
         this.location[0] = location[0];
         this.location[1] = location[1];
@@ -434,11 +423,11 @@ public class JointTransform {
         updateMatrix();
     }
 
+    /**********************************************************************************************/
     private void updateMatrix() {
         if (matrix != null) {
             Matrix.setIdentityM(matrix, 0);
             Matrix.translateM(matrix, 0, location[0], location[1], location[2]);
-            // FIXME: matrix overlaps
             Matrix.multiplyMM(matrix, 0, matrix, 0, qRotation.toRotationMatrix(new float[16]), 0);
             Matrix.scaleM(matrix, 0, scale[0], scale[1], scale[2]);
         } else {
@@ -467,12 +456,10 @@ public class JointTransform {
                 if (this.scale[2] != null)
                     Matrix.scaleM(calculatedMatrix, 0, 0, 0, scale[2]);
             }
-            //Matrix.multiplyMM(matrix,0,matrix,0, qRotation.toRotationMatrix(new float[16]),0);
         }
     }
 
-
-
+    /**********************************************************************************************/
     @Override
     public String toString() {
         return "JointTransform{" +
@@ -481,6 +468,6 @@ public class JointTransform {
                 ", location=" + Arrays.toString(location) +
                 '}';
     }
-
-
+    /**********************************************************************************************/
 }
+/**************************************************************************************************/

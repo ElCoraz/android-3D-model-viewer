@@ -4,27 +4,30 @@ import android.graphics.PointF;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-
+/**************************************************************************************************/
 class TouchScreen {
-
-	// these matrices will be used to move and zoom image
+	/**********************************************************************************************/
 	private android.graphics.Matrix matrix = new android.graphics.Matrix();
 	private android.graphics.Matrix savedMatrix = new android.graphics.Matrix();
-	// we can be in one of these 3 states
+	/**********************************************************************************************/
 	private static final int NONE = 0;
 	private static final int DRAG = 1;
 	private static final int ZOOM = 2;
+	/**********************************************************************************************/
 	private int mode = NONE;
-	// remember some things for zooming
+	/**********************************************************************************************/
 	private PointF start = new PointF();
 	private PointF mid = new PointF();
+	/**********************************************************************************************/
 	private float oldDist = 1f;
+	/**********************************************************************************************/
 	private float d = 0f;
+	/**********************************************************************************************/
 	private float newRot = 0f;
+	/**********************************************************************************************/
 	private float[] lastEvent = null;
-
+	/**********************************************************************************************/
 	public boolean onTouch(View v, MotionEvent event) {
-		// handle touch events here
 		ImageView view = (ImageView) v;
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
@@ -84,31 +87,19 @@ class TouchScreen {
 		view.setImageMatrix(matrix);
 		return true;
 	}
-
-	/**
-	 * Determine the space between the first two fingers
-	 */
+	/**********************************************************************************************/
 	private float spacing(MotionEvent event) {
 		float x = event.getX(0) - event.getX(1);
 		float y = event.getY(0) - event.getY(1);
 		return (float)Math.sqrt(x * x + y * y);
 	}
-
-	/**
-	 * Calculate the mid point of the first two fingers
-	 */
+	/**********************************************************************************************/
 	private void midPoint(PointF point, MotionEvent event) {
 		float x = event.getX(0) + event.getX(1);
 		float y = event.getY(0) + event.getY(1);
 		point.set(x / 2, y / 2);
 	}
-
-	/**
-	 * Calculate the degree to be rotated by.
-	 *
-	 * @param event
-	 * @return Degrees
-	 */
+	/**********************************************************************************************/
 	public static float getRotation(MotionEvent event) {
 		double dx = (event.getX(0) - event.getX(1));
 		double dy = (event.getY(0) - event.getY(1));
@@ -116,7 +107,7 @@ class TouchScreen {
 		double degrees = Math.toDegrees(radians);
 		return (float) degrees;
 	}
-
+	/**********************************************************************************************/
 	public static float getRotation360(MotionEvent event) {
 		double dx = (event.getX(0) - event.getX(1));
 		double dy = (event.getY(0) - event.getY(1));
@@ -148,7 +139,7 @@ class TouchScreen {
 		}
 		return (float) degrees;
 	}
-
+	/**********************************************************************************************/
 	public static int getSquare(MotionEvent event) {
 		double dx = (event.getX(0) - event.getX(1));
 		double dy = (event.getY(0) - event.getY(1));

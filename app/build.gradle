@@ -34,6 +34,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'org.andresoviedo.dddmodel2'
 }
 
 dependencies {

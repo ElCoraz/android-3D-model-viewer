@@ -7,22 +7,22 @@ import org.andresoviedo.util.io.IOUtils;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
+/**************************************************************************************************/
 public final class Cube {
-
+    /**********************************************************************************************/
     final static float[] cubeVertices = new float[]{
             // @formatter:off
-            -1f, 1f, 1f, // top left front
-            -1f, -1f, 1f, // bottom left front
-            1f, -1f, 1f, // bottom right front
-            1f, 1f, 1f, // upper right front
-            -1f, 1f, -1f, // top left back
-            -1f, -1f, -1f, // bottom left back
-            1f, -1f, -1f, // bottom right back
-            1f, 1f, -1f // upper right back
+            -1f, 1f, 1f,     // top left front
+            -1f, -1f, 1f,    // bottom left front
+            1f, -1f, 1f,     // bottom right front
+            1f, 1f, 1f,      // upper right front
+            -1f, 1f, -1f,    // top left back
+            -1f, -1f, -1f,   // bottom left back
+            1f, -1f, -1f,    // bottom right back
+            1f, 1f, -1f      // upper right back
             // @formatter:on
     };
-
+    /**********************************************************************************************/
     final static int[] cubeIndices = new int[]{
             // @formatter:off
             // front
@@ -45,6 +45,7 @@ public final class Cube {
             7, 3, 6
             // @formatter:on
     };
+    /**********************************************************************************************/
     private final static float[] cubePositionData = {
             //@formatter:off
             // Front face
@@ -95,6 +96,7 @@ public final class Cube {
             -1.0f, -1.0f, 1.0f,
             -1.0f, -1.0f, -1.0f
     };
+    /**********************************************************************************************/
     private final static float[] cubeColorData = {
 
             // Front face (red)
@@ -145,6 +147,7 @@ public final class Cube {
             1.0f, 0.0f, 1.0f, 1.0f,
             1.0f, 0.0f, 1.0f, 1.0f
     };
+    /**********************************************************************************************/
     private final static float[] cubeColorDataWithTransparency = {
 
             // Front face (red)
@@ -195,6 +198,7 @@ public final class Cube {
             1.0f, 0.0f, 1.0f, 0.5f,
             1.0f, 0.0f, 1.0f, 0.5f
     };
+    /**********************************************************************************************/
     private final static float[] cubeNormalData =
             {
                     // Front face
@@ -245,6 +249,7 @@ public final class Cube {
                     0.0f, -1.0f, 0.0f,
                     0.0f, -1.0f, 0.0f
             };
+    /**********************************************************************************************/
     private final static float[] cubeTextureCoordinateData =
             {
                     // Front face
@@ -296,12 +301,14 @@ public final class Cube {
                     1.0f, 0.0f
             };
 
+    /**********************************************************************************************/
     public static Object3DData buildCubeV1() {
         return new Object3DData(
                 IOUtils.createFloatBuffer(cubePositionData.length).put(cubePositionData))
                 .setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV1");
     }
 
+    /**********************************************************************************************/
     public static Object3DData buildCubeV1_with_normals() {
         return new Object3DData(
                 IOUtils.createFloatBuffer(cubePositionData.length).put(cubePositionData))
@@ -312,6 +319,7 @@ public final class Cube {
                 .setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV1_light");
     }
 
+    /**********************************************************************************************/
     public static Object3DData buildCubeV3(byte[] textureData) {
         return new Object3DData(
                 IOUtils.createFloatBuffer(cubePositionData.length).put(cubePositionData),
@@ -320,6 +328,7 @@ public final class Cube {
                 textureData).setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV3");
     }
 
+    /**********************************************************************************************/
     public static Object3DData buildCubeV4(byte[] textureData) {
         return new Object3DData(
                 IOUtils.createFloatBuffer(cubePositionData.length).put(cubePositionData),
@@ -330,10 +339,11 @@ public final class Cube {
                 textureData).setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV4");
     }
 
+    /**********************************************************************************************/
     public static Object3DData buildCubeV2() {
         IntBuffer drawBuffer = IOUtils.createIntBuffer(cubeIndices.length).put(cubeIndices);
-        FloatBuffer vertexBuffer = IOUtils.createFloatBuffer(cubeVertices.length ).put(cubeVertices);
-        return new Object3DData(vertexBuffer,drawBuffer).setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV2")
+        FloatBuffer vertexBuffer = IOUtils.createFloatBuffer(cubeVertices.length).put(cubeVertices);
+        return new Object3DData(vertexBuffer, drawBuffer).setDrawMode(GLES20.GL_TRIANGLES).setId("cubeV2")
                 .setDrawOrder(drawBuffer).setVertexBuffer(vertexBuffer);
     }
 }

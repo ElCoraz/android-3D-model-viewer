@@ -6,12 +6,12 @@ import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 import org.andresoviedo.dddmodel2.R;
-
-
+/**************************************************************************************************/
 public class TextActivity extends Activity {
-
+	/**********************************************************************************************/
 	private TextView text;
 
+	/**********************************************************************************************/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -20,7 +20,7 @@ public class TextActivity extends Activity {
 		Bundle b = getIntent().getExtras();
 		String title = b.getString("title");
 		setTitle(title);
-		
+
 		String value = b.getString("text");
 		text = findViewById(R.id.text_activity_text);
 		text.setMovementMethod(LinkMovementMethod.getInstance());

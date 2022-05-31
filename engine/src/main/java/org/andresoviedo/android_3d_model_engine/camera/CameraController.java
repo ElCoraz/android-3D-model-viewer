@@ -1,5 +1,5 @@
 package org.andresoviedo.android_3d_model_engine.camera;
-
+/**************************************************************************************************/
 import android.util.Log;
 
 import org.andresoviedo.android_3d_model_engine.controller.TouchEvent;
@@ -8,26 +8,28 @@ import org.andresoviedo.android_3d_model_engine.view.ModelRenderer;
 import org.andresoviedo.util.event.EventListener;
 
 import java.util.EventObject;
-
+/**************************************************************************************************/
 public final class CameraController implements EventListener {
-
+    /**********************************************************************************************/
     private final Camera camera;
+    /**********************************************************************************************/
     private int width;
     private int height;
 
+    /**********************************************************************************************/
     public CameraController(Camera camera) {
         this.camera = camera;
     }
 
+    /**********************************************************************************************/
     @Override
     public boolean onEvent(EventObject event) {
-        if (event instanceof ModelRenderer.ViewEvent){
+        if (event instanceof ModelRenderer.ViewEvent) {
             this.width = ((ModelRenderer.ViewEvent) event).getWidth();
             this.height = ((ModelRenderer.ViewEvent) event).getHeight();
-        }
-        else if (event instanceof TouchEvent) {
+        } else if (event instanceof TouchEvent) {
             TouchEvent touchEvent = (TouchEvent) event;
-            switch (touchEvent.getAction()){
+            switch (touchEvent.getAction()) {
                 case CLICK:
                     break;
                 case MOVE:
@@ -53,4 +55,6 @@ public final class CameraController implements EventListener {
         }
         return true;
     }
+    /**********************************************************************************************/
 }
+/**************************************************************************************************/

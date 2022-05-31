@@ -10,17 +10,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EventObject;
 import java.util.List;
-
+/**************************************************************************************************/
 public class CheckList extends Widget {
-
-    // bytes reserved per glyph
+    /**********************************************************************************************/
     private final static short GLYPH_BYTES = 18;
-    // pixel size factor for glyphs
+    /**********************************************************************************************/
     private final static short GLYPH_SIZE = 1;
-
+    /**********************************************************************************************/
     private final static float GLYPH_WIDTH = 0.5f;
     private final static float GLYPH_HEIGHT = 0.7f;
-
+    /**********************************************************************************************/
     public enum Style {
 
         H1(96), BODY_1(16);
@@ -31,65 +30,64 @@ public class CheckList extends Widget {
             this.size = size;
         }
     }
-
+    /**********************************************************************************************/
     public static class ItemSelectedEvent extends EventObject {
-
+        /******************************************************************************************/
         private final int selected;
         private final Object item;
-
+        /******************************************************************************************/
         ItemSelectedEvent(Object source, Object item, int idx) {
             super(source);
             this.item = item;
             this.selected = idx;
         }
-
+        /******************************************************************************************/
         public int getSelected() {
             return selected;
         }
-
+        /******************************************************************************************/
         public Object getItem() {
             return item;
         }
     }
-
+    /**********************************************************************************************/
     public static class Builder {
-
+        /******************************************************************************************/
         private List<Style> styles = new ArrayList<>();
         private List<Boolean> states = new ArrayList<>();
         private List<Object> items = new ArrayList<>();
-
+        /******************************************************************************************/
         public Builder add(String text, Style style, boolean selected) {
             items.add(text);
             styles.add(style);
             states.add(selected);
             return this;
         }
-
+        /******************************************************************************************/
         public void add(String text) {
             this.add(text, CheckList.Style.BODY_1, false);
         }
-
+        /******************************************************************************************/
         public CheckList build() {
             if (items.isEmpty()) throw new IllegalArgumentException();
             return new CheckList(items, styles, states);
         }
-
     }
-
+    /**********************************************************************************************/
     private final List<Object> items;
     private final List<Style> styles;
     private final List<Boolean> states;
-
+    /**********************************************************************************************/
     private final int totalGlyphs;
     private final int rows;
     private final int cols;
-
+    /**********************************************************************************************/
     private CheckList(List<Object> items, List<Style> styles, List<Boolean> states) {
         super();
         this.items = items;
         this.states = states;
         this.styles = styles;
-        // count total chars
+
         int max = 0;
         int count = 0;
         for (Object item_ : items) {
@@ -99,15 +97,17 @@ public class CheckList extends Widget {
                 count += item.length();
             }
         }
-        this.cols = max + 1; // space reserved for checkbox
+        this.cols = max + 1;
         this.rows = this.items.size();
         this.totalGlyphs = count;
-        final int total = totalGlyphs + items.size() + 1; // reserve 1 for border
+        final int total = totalGlyphs + items.size() + 1;
+
         setVertexBuffer(IOUtils.createFloatBuffer(total * GLYPH_BYTES * 3));
         setColorsBuffer(IOUtils.createFloatBuffer(total * GLYPH_BYTES * 4));
+
         build();
     }
-
+    /**********************************************************************************************/
     @Override
     public boolean onEvent(EventObject event) {
         super.onEvent(event);
@@ -115,24 +115,25 @@ public class CheckList extends Widget {
             ClickEvent clickEvent = (ClickEvent) event;
             if (clickEvent.getWidget() != this) return  true;
 
-            // FIXME: unproject this
             float y = clickEvent.getY();
+
             y -= getLocationY();
             y /= getScaleY();
             y /= GLYPH_SIZE;
+
             int idx = items.size() - 1 - (int) y;
 
             set(idx, !states.get(idx));
         }
         return true;
     }
-
+    /**********************************************************************************************/
     public void set(int idx, boolean state) {
         states.set(idx, state);
         buildCheckBox(idx);
         fireEvent(new ItemSelectedEvent(this, items.get(idx), idx));
     }
-
+    /**********************************************************************************************/
     private void buildCheckBox(int idx){
 
         int mark = GLYPH_BYTES * 3 * totalGlyphs + GLYPH_BYTES * 3 * idx;
@@ -150,12 +151,11 @@ public class CheckList extends Widget {
         }
         setVertexBuffer(getVertexBuffer());
     }
-
+    /**********************************************************************************************/
     @Override
     public void toggleVisible(){
         Log.i("CheckList", "Toggling menu...");
 
-        // float[] finalPosition = calculatePosition(this, 4);
         float[] finalPosition = getLocation().clone();
         Log.i("CheckList", "Final position: " + Arrays.toString(finalPosition));
 
@@ -189,10 +189,9 @@ public class CheckList extends Widget {
             animate(start, end, 250);
         }
     }
-
+    /**********************************************************************************************/
     private void build() {
         try {
-            // allocate buffers
             final FloatBuffer vertexBuffer = getVertexBuffer();
             final FloatBuffer colorBuffer = getColorsBuffer();
 
@@ -244,10 +243,10 @@ public class CheckList extends Widget {
             float height = rows * GLYPH_SIZE;
             Log.v("CheckList","Size. width:"+ totalWidth +", height:"+height+", depth:"+ totalWidth);
 
-            // draw border
             vertexBuffer.put(0);
             vertexBuffer.put(0);
             vertexBuffer.put(0);
+
             for (int i = 0; i < 4; i++) colorBuffer.put(0f);
 
             buildBorder(vertexBuffer, colorBuffer, totalWidth, rows * GLYPH_SIZE);
@@ -267,7 +266,7 @@ public class CheckList extends Widget {
             Log.e("CheckList", e.getMessage(), e);
         }
     }
-
+    /**********************************************************************************************/
     private static void buildCube(FloatBuffer resultVertexBuffer, FloatBuffer resultColorBuffer,
                                   int offset, float[] location, float width, float height, float depth) {
 
@@ -284,3 +283,4 @@ public class CheckList extends Widget {
         resultColorBuffer.put(1f).put(1f).put(1f).put(1f);
     }
 }
+

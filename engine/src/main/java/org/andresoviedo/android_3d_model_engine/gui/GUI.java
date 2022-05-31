@@ -15,36 +15,33 @@ import org.andresoviedo.util.math.Math3DUtils;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.EventObject;
-
+/**************************************************************************************************/
 public class GUI extends Widget implements EventListener {
-
+    /**********************************************************************************************/
     public static final int POSITION_TOP_LEFT = 0;
     public static final int POSITION_MIDDLE = 4;
     public static final int POSITION_TOP_RIGHT = 2;
-
+    /**********************************************************************************************/
     private final float[] cameraPosition = new float[]{0, 0, 1.1f};
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
-
+    /**********************************************************************************************/
     private int width;
     private int height;
     private float ratio;
 
-    public GUI(){
+    /**********************************************************************************************/
+    public GUI() {
         super();
         addListener(this);
     }
 
-    /**
-     * @param width horizontal screen pixels
-     * @param height vertical screen pixels
-     */
+    /**********************************************************************************************/
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
         this.ratio = (float) width / height;
 
-        // setup view & projection
         Matrix.setLookAtM(viewMatrix, 0,
                 cameraPosition[0], cameraPosition[1], cameraPosition[2],
                 0, 0, 0,
@@ -63,16 +60,14 @@ public class GUI extends Widget implements EventListener {
 
     }
 
-    // set position based on layout:
-    // top-left, top-middle, top-right       =   0 1 2
-    // middle-left, middle, middle-right     =   3 4 5
-    // bottom-left, bottom, bottom-right     =   6 7 8
+    /**********************************************************************************************/
     public void addWidget(Widget widget) {
         super.addWidget(widget);
         widget.setRatio(ratio);
-        Log.i("GUI","Widget added: "+widget);
+        Log.i("GUI", "Widget added: " + widget);
     }
 
+    /**********************************************************************************************/
     public void render(RendererFactory rendererFactory, float[] lightPosInWorldSpace, float[] colorMask) {
         super.render(rendererFactory, lightPosInWorldSpace, colorMask);
         for (int i = 0; i < widgets.size(); i++) {
@@ -80,6 +75,7 @@ public class GUI extends Widget implements EventListener {
         }
     }
 
+    /**********************************************************************************************/
     private void renderWidget(RendererFactory rendererFactory, Widget widget, float[] lightPosInWorldSpace, float[]
             colorMask) {
         if (!widget.isVisible()) return;
@@ -90,6 +86,7 @@ public class GUI extends Widget implements EventListener {
         drawer.draw(widget, projectionMatrix, viewMatrix, -1, lightPosInWorldSpace, colorMask, cameraPosition);
     }
 
+    /**********************************************************************************************/
     @Override
     public boolean onEvent(EventObject event) {
         super.onEvent(event);
@@ -98,13 +95,14 @@ public class GUI extends Widget implements EventListener {
             TouchEvent.Action action = touchEvent.getAction();
             if (action == TouchEvent.Action.CLICK) {
                 processClick(touchEvent.getX(), touchEvent.getY());
-            } else if (action == TouchEvent.Action.MOVE){
+            } else if (action == TouchEvent.Action.MOVE) {
                 processMove(touchEvent);
             }
         }
         return true;
     }
 
+    /**********************************************************************************************/
     private void processMove(TouchEvent touchEvent) {
         float x = touchEvent.getX();
         float y = touchEvent.getY();
@@ -124,22 +122,19 @@ public class GUI extends Widget implements EventListener {
                 Log.i("GUI", "Click! " + widget.getId());
                 float[] point = Math3DUtils.add(nearHit, Math3DUtils.multiply(direction, intersection[0]));
 
-                //float dx = touchEvent.getdX() / touchEvent.getWidth();
-                //float dy = touchEvent.getdY() / touchEvent.getHeight();
-
-                // calculate point 2
                 float[] nearHit2 = CollisionDetection.unProject(width, height, viewMatrix, projectionMatrix,
                         touchEvent.getX2(), touchEvent.getY2(), 0);
                 float[] point2 = Math3DUtils.add(nearHit2, Math3DUtils.multiply(direction, intersection[0]));
 
-                float dx = point2[0]-point[0];
-                float dy = point2[1]-point[1];
+                float dx = point2[0] - point[0];
+                float dy = point2[1] - point[1];
 
                 fireEvent(new GUI.MoveEvent(this, widget, point[0], point[1], point[2], dx, dy));
             }
         }
     }
 
+    /**********************************************************************************************/
     private void processClick(float x, float y) {
         Log.v("GUI", "Processing click... " + x + "," + y);
         float[] nearHit = CollisionDetection.unProject(width, height, viewMatrix, projectionMatrix, x, y, 0);

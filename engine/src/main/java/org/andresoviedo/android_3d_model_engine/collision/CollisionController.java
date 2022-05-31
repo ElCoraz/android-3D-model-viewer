@@ -1,6 +1,5 @@
 package org.andresoviedo.android_3d_model_engine.collision;
 
-import android.transition.Scene;
 import android.util.Log;
 
 import org.andresoviedo.android_3d_model_engine.controller.TouchEvent;
@@ -15,29 +14,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EventObject;
 import java.util.List;
-
+/**************************************************************************************************/
 public class CollisionController implements EventListener {
-
+    /**********************************************************************************************/
     private final ModelSurfaceView view;
     private final SceneLoader scene;
+    /**********************************************************************************************/
     private final List<Object3DData> objects;
-
+    /**********************************************************************************************/
     private final List<EventListener> listeners = new ArrayList<>();
 
+    /**********************************************************************************************/
     public CollisionController(ModelSurfaceView view, SceneLoader scene) {
         this.view = view;
         this.scene = scene;
         this.objects = scene.getObjects();
     }
 
+    /**********************************************************************************************/
     public List<Object3DData> getObjects() {
         return objects;
     }
 
+    /**********************************************************************************************/
     public void addListener(EventListener listener) {
         this.listeners.add(listener);
     }
 
+    /**********************************************************************************************/
     @Override
     public boolean onEvent(EventObject event) {
         Log.v("CollisionController", "Processing event... " + event.toString());
@@ -53,9 +57,7 @@ public class CollisionController implements EventListener {
                         objects, view.getWidth(), view.getHeight(),
                         view.getViewMatrix(), view.getProjectionMatrix(), x, y);
                 if (objectHit != null) {
-
-                    // intersection point
-                    Object3DData point3D = null;
+                   Object3DData point3D = null;
 
                     if (this.scene.isCollision()) {
 
@@ -76,5 +78,4 @@ public class CollisionController implements EventListener {
         }
         return true;
     }
-
 }

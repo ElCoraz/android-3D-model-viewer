@@ -33,159 +33,81 @@ import java.util.EventObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-/**
- * This class loads a 3D scena as an example of what can be done with the app
- *
- * @author andresoviedo
- */
+/**************************************************************************************************/
 public class SceneLoader implements LoadListener, EventListener {
-
-    /**
-     * Default max size for dimension on any axis
-     */
+    /**********************************************************************************************/
     private static final float DEFAULT_MAX_MODEL_SIZE = 100;
-    /**
-     * Camera position on Z axis
-     */
+    /**********************************************************************************************/
     private static final float DEFAULT_CAMERA_POSITION = DEFAULT_MAX_MODEL_SIZE / 2 + 25;
-    /**
-     * Parent component
-     */
+    /**********************************************************************************************/
     protected final Activity parent;
-    /**
-     * Model uri
-     */
+    /**********************************************************************************************/
     private final URI uri;
-    /**
-     * 0 = obj, 1 = stl, 2 = dae
-     */
+    /**********************************************************************************************/
     private final int type;
-    /**
-     * OpenGL view
-     */
+    /**********************************************************************************************/
     private GLSurfaceView glView;
-    /**
-     * List of 3D models
-     */
+    /**********************************************************************************************/
     private List<Object3DData> objects = new ArrayList<>();
-    /**
-     * List of GUI objects
-     */
+    /**********************************************************************************************/
     private List<Object3DData> guiObjects = new ArrayList<>();
-    /**
-     * Point of view camera
-     */
+    /**********************************************************************************************/
     private Camera camera = new Camera(DEFAULT_CAMERA_POSITION);
-    /**
-     * Blender uses different coordinate system.
-     * This is a patch to turn camera and SkyBox 90 degree on X axis
-     */
+    /**********************************************************************************************/
     private boolean isFixCoordinateSystem = false;
-    /**
-     * Enable or disable blending (transparency)
-     */
+    /**********************************************************************************************/
     private boolean isBlendingEnabled = true;
-    /**
-     * Force transparency
-     */
+    /**********************************************************************************************/
     private boolean isBlendingForced = false;
-    /**
-     * state machine for drawing modes
-     */
+    /**********************************************************************************************/
     private int drawwMode = 0;
-    /**
-     * Whether to draw objects as wireframes
-     */
+    /**********************************************************************************************/
     private boolean drawWireframe = false;
-    /**
-     * Whether to draw using points
-     */
+    /**********************************************************************************************/
     private boolean drawPoints = false;
-    /**
-     * Whether to draw bounding boxes around objects
-     */
+    /**********************************************************************************************/
     private boolean drawBoundingBox = false;
-    /**
-     * Whether to draw face normals. Normally used to debug models
-     */
+    /**********************************************************************************************/
     private boolean drawNormals = false;
-    /**
-     * Whether to draw using textures
-     */
+    /**********************************************************************************************/
     private boolean drawTextures = true;
-    /**
-     * Whether to draw using colors or use default white color
-     */
+    /**********************************************************************************************/
     private boolean drawColors = true;
-    /**
-     * Light toggle feature: we have 3 states: no light, light, light + rotation
-     */
+    /**********************************************************************************************/
     private boolean rotatingLight = true;
-    /**
-     * Light toggle feature: whether to draw using lights
-     */
+    /**********************************************************************************************/
     private boolean drawLighting = true;
-    /**
-     * Animate model (dae only) or not
-     */
+    /**********************************************************************************************/
     private boolean doAnimation = true;
-    /**
-     * Animate model (dae only) or not
-     */
+    /**********************************************************************************************/
     private boolean isSmooth = false;
-    /**
-     * show bind pose only
-     */
+    /**********************************************************************************************/
     private boolean showBindPose = false;
-    /**
-     * Draw skeleton or not
-     */
+    /**********************************************************************************************/
     private boolean drawSkeleton = false;
-    /**
-     * Toggle collision detection
-     */
+    /**********************************************************************************************/
     private boolean isCollision = false;
-    /**
-     * Toggle 3d
-     */
+    /**********************************************************************************************/
     private boolean isStereoscopic = false;
-    /**
-     * Toggle 3d anaglyph (red, blue glasses)
-     */
+    /**********************************************************************************************/
     private boolean isAnaglyph = false;
-    /**
-     * Toggle 3d VR glasses
-     */
+    /**********************************************************************************************/
     private boolean isVRGlasses = false;
-    /**
-     * Object selected by the user
-     */
+    /**********************************************************************************************/
     private Object3DData selectedObject = null;
-    /**
-     * Light bulb 3d data
-     */
+    /**********************************************************************************************/
     private final Object3DData lightBulb = Point.build(new float[]{0, 0, 0}).setId("light");
-    /**
-     * Animator
-     */
+    /**********************************************************************************************/
     private Animator animator = new Animator();
-    /**
-     * Did the user touched the model for the first time?
-     */
+    /**********************************************************************************************/
     private boolean userHasInteracted;
-    /**
-     * time when model loading has started (for stats)
-     */
+    /**********************************************************************************************/
     private long startTime;
-
-    /**
-     * A cache to save original model dimensions before rescaling them to fit in screen
-     * This enables rescaling several times
-     */
+    /**********************************************************************************************/
     private Map<Object3DData, Dimensions> originalDimensions = new HashMap<>();
     private Map<Object3DData, Transform> originalTransforms = new HashMap<>();
 
+    /**********************************************************************************************/
     public SceneLoader(Activity main, URI uri, int type, GLSurfaceView glView) {
         this.parent = main;
         this.uri = uri;
@@ -195,9 +117,10 @@ public class SceneLoader implements LoadListener, EventListener {
         lightBulb.setLocation(new float[]{0, 0, DEFAULT_CAMERA_POSITION});
     }
 
+    /**********************************************************************************************/
     public void init() {
 
-        camera.setChanged(true); // force first draw
+        camera.setChanged(true);
 
         if (uri == null) {
             return;
@@ -215,6 +138,7 @@ public class SceneLoader implements LoadListener, EventListener {
         }
     }
 
+    /**********************************************************************************************/
     public void fixCoordinateSystem() {
         final List<Object3DData> objects = getObjects();
         for (int i = 0; i < objects.size(); i++) {
@@ -228,33 +152,32 @@ public class SceneLoader implements LoadListener, EventListener {
         }
     }
 
+    /**********************************************************************************************/
     public boolean isFixCoordinateSystem() {
         return this.isFixCoordinateSystem;
     }
 
+    /**********************************************************************************************/
     public final Camera getCamera() {
         return camera;
     }
 
+    /**********************************************************************************************/
     private final void makeToastText(final String text, final int toastDuration) {
         parent.runOnUiThread(() -> Toast.makeText(parent.getApplicationContext(), text, toastDuration).show());
     }
 
+    /**********************************************************************************************/
     public final Object3DData getLightBulb() {
         return lightBulb;
     }
 
-    /**
-     * Hook for animating the objects before the rendering
-     */
+    /**********************************************************************************************/
     public final void onDrawFrame() {
-
         animateLight();
 
-        // smooth camera transition
         camera.animate();
 
-        // initial camera animation. animate if user didn't touch the screen
         if (!userHasInteracted) {
             animateCamera();
         }
@@ -269,65 +192,60 @@ public class SceneLoader implements LoadListener, EventListener {
         }
     }
 
+    /**********************************************************************************************/
     private void animateLight() {
         if (!rotatingLight) return;
 
-        // animate light - Do a complete rotation every 5 seconds.
         long time = SystemClock.uptimeMillis() % 5000L;
         float angleInDegrees = (360.0f / 5000.0f) * ((int) time);
         lightBulb.setRotation1(new float[]{0, angleInDegrees, 0});
     }
 
+    /**********************************************************************************************/
     private void animateCamera() {
         camera.translateCamera(0.0005f, 0f);
     }
 
+    /**********************************************************************************************/
     public final synchronized void addObject(Object3DData obj) {
         Log.i("SceneLoader", "Adding object to scene... " + obj);
         objects.add(obj);
-        //requestRender();
-
-        // rescale objects so they fit in the viewport
-        // FIXME: this does not be reviewed
-        //rescale(this.getObjects(), DEFAULT_MAX_MODEL_SIZE, new float[3]);
     }
 
+    /**********************************************************************************************/
     public final synchronized void addGUIObject(Object3DData obj) {
-
-        // log event
         Log.i("SceneLoader", "Adding GUI object to scene... " + obj);
 
-        // add object
         guiObjects.add(obj);
-
-        // requestRender();
     }
 
+    /**********************************************************************************************/
     private void requestRender() {
         if (glView != null) {
             glView.requestRender();
         }
     }
 
+    /**********************************************************************************************/
     public final synchronized List<Object3DData> getObjects() {
         return objects;
     }
 
+    /**********************************************************************************************/
     public final synchronized List<Object3DData> getGUIObjects() {
         return guiObjects;
     }
 
+    /**********************************************************************************************/
     public final void toggleWireframe() {
-
-        // info: to enable normals, just change module to 5
         final int module = 4;
+
         this.drawwMode = (this.drawwMode + 1) % module;
         this.drawNormals = false;
         this.drawPoints = false;
         this.drawSkeleton = false;
         this.drawWireframe = false;
 
-        // toggle state machine
         switch (drawwMode) {
             case 0:
                 makeToastText("Faces", Toast.LENGTH_SHORT);
@@ -353,27 +271,33 @@ public class SceneLoader implements LoadListener, EventListener {
         requestRender();
     }
 
+    /**********************************************************************************************/
     public final boolean isDrawWireframe() {
         return this.drawWireframe;
     }
 
+    /**********************************************************************************************/
     public final boolean isDrawPoints() {
         return this.drawPoints;
     }
 
+    /**********************************************************************************************/
     public final void toggleBoundingBox() {
         this.drawBoundingBox = !drawBoundingBox;
         requestRender();
     }
 
+    /**********************************************************************************************/
     public final boolean isDrawBoundingBox() {
         return drawBoundingBox;
     }
 
+    /**********************************************************************************************/
     public final boolean isDrawNormals() {
         return drawNormals;
     }
 
+    /**********************************************************************************************/
     public final void toggleTextures() {
         if (drawTextures && drawColors) {
             this.drawTextures = false;
@@ -390,6 +314,7 @@ public class SceneLoader implements LoadListener, EventListener {
         }
     }
 
+    /**********************************************************************************************/
     public final void toggleLighting() {
         if (this.drawLighting && this.rotatingLight) {
             this.rotatingLight = false;
@@ -405,8 +330,8 @@ public class SceneLoader implements LoadListener, EventListener {
         requestRender();
     }
 
+    /**********************************************************************************************/
     public final void toggleAnimation() {
-        //showAnimationsDialog();
         if (!this.doAnimation) {
             this.doAnimation = true;
             this.showBindPose = false;
@@ -418,6 +343,7 @@ public class SceneLoader implements LoadListener, EventListener {
         }
     }
 
+    /**********************************************************************************************/
     public final void toggleSmooth() {
         for (int i = 0; i < getObjects().size(); i++) {
             if (!this.isSmooth) {
@@ -430,6 +356,7 @@ public class SceneLoader implements LoadListener, EventListener {
         this.isSmooth = !this.isSmooth;
     }
 
+    /**********************************************************************************************/
     public final void showSettingsDialog() {
 
         final AnimatedModel animatedModel;
@@ -457,6 +384,7 @@ public class SceneLoader implements LoadListener, EventListener {
         builderSingle.show();
     }
 
+    /**********************************************************************************************/
     private void showGeometriesDialog(final AnimatedModel animatedModel) {
         final AlertDialog.Builder builderSingle = new AlertDialog.Builder(this.parent);
         builderSingle.setTitle("Geometries");
@@ -478,6 +406,7 @@ public class SceneLoader implements LoadListener, EventListener {
         builderSingle.show();
     }
 
+    /**********************************************************************************************/
     private void showJointsDialog(final AnimatedModel animatedModel) {
         final AlertDialog.Builder builderSingle = new AlertDialog.Builder(this.parent);
         builderSingle.setTitle("Joints");
@@ -499,19 +428,23 @@ public class SceneLoader implements LoadListener, EventListener {
         builderSingle.show();
     }
 
+    /**********************************************************************************************/
     public final boolean isDoAnimation() {
         return doAnimation;
     }
 
+    /**********************************************************************************************/
     public final boolean isShowBindPose() {
         return showBindPose;
     }
 
+    /**********************************************************************************************/
     public final void toggleCollision() {
         this.isCollision = !isCollision;
         makeToastText("Collisions: " + isCollision, Toast.LENGTH_SHORT);
     }
 
+    /**********************************************************************************************/
     public final void toggleStereoscopic() {
         if (!this.isStereoscopic) {
             this.isStereoscopic = true;
@@ -521,7 +454,6 @@ public class SceneLoader implements LoadListener, EventListener {
         } else if (this.isAnaglyph) {
             this.isAnaglyph = false;
             this.isVRGlasses = true;
-            // move object automatically cause with VR glasses we still have no way of moving object
             this.userHasInteracted = false;
             makeToastText("Stereoscopic VR Glasses", Toast.LENGTH_SHORT);
         } else {
@@ -530,42 +462,50 @@ public class SceneLoader implements LoadListener, EventListener {
             this.isVRGlasses = false;
             makeToastText("Stereoscopic disabled", Toast.LENGTH_SHORT);
         }
-        // recalculate camera
         this.camera.setChanged(true);
     }
 
+    /**********************************************************************************************/
     public final boolean isVRGlasses() {
         return isVRGlasses;
     }
 
+    /**********************************************************************************************/
     public final boolean isDrawTextures() {
         return drawTextures;
     }
 
+    /**********************************************************************************************/
     public final boolean isDrawColors() {
         return drawColors;
     }
 
+    /**********************************************************************************************/
     public final boolean isDrawLighting() {
         return drawLighting;
     }
 
+    /**********************************************************************************************/
     public final boolean isDrawSkeleton() {
         return drawSkeleton;
     }
 
+    /**********************************************************************************************/
     public final boolean isCollision() {
         return isCollision;
     }
 
+    /**********************************************************************************************/
     public final boolean isStereoscopic() {
         return isStereoscopic;
     }
 
+    /**********************************************************************************************/
     public final boolean isAnaglyph() {
         return isAnaglyph;
     }
 
+    /**********************************************************************************************/
     public final void toggleBlending() {
         if (this.isBlendingEnabled && !this.isBlendingForced) {
             makeToastText("X-Ray enabled", Toast.LENGTH_SHORT);
@@ -582,51 +522,43 @@ public class SceneLoader implements LoadListener, EventListener {
         }
     }
 
+    /**********************************************************************************************/
     public final boolean isBlendingEnabled() {
         return isBlendingEnabled;
     }
 
+    /**********************************************************************************************/
     public final boolean isBlendingForced() {
         return isBlendingForced;
     }
 
+    /**********************************************************************************************/
     @Override
     public void onStart() {
-
-        // mark start time
         startTime = SystemClock.uptimeMillis();
 
-        // provide context to allow reading resources
         ContentUtils.setThreadActivity(parent);
     }
 
+    /**********************************************************************************************/
     @Override
     public void onProgress(String progress) {
     }
 
+    /**********************************************************************************************/
     @Override
     public synchronized void onLoad(Object3DData data) {
-
-        // if we add object, we need to initialize Animation, otherwise ModelRenderer will crash
         if (doAnimation) {
             animator.update(data, isShowBindPose());
         }
-
-        // load new object and rescale all together so they fit in the viewport
         addObject(data);
-
-        // rescale objects so they fit in the viewport
-        //rescale(this.getObjects(), DEFAULT_MAX_MODEL_SIZE, new float[3]);
-
     }
 
+    /**********************************************************************************************/
     @Override
     public synchronized void onLoadComplete() {
-
-        // get complete list of objects loaded
         final List<Object3DData> objs = getObjects();
 
-        // show object errors
         List<String> allErrors = new ArrayList<>();
         for (Object3DData data : objs) {
             allErrors.addAll(data.getErrors());
@@ -635,25 +567,22 @@ public class SceneLoader implements LoadListener, EventListener {
             makeToastText(allErrors.toString(), Toast.LENGTH_LONG);
         }
 
-        // notify user
         final String elapsed = (SystemClock.uptimeMillis() - startTime) / 1000 + " secs";
         makeToastText("Load complete (" + elapsed + ")", Toast.LENGTH_LONG);
 
-        // clear thread local
         ContentUtils.setThreadActivity(null);
 
-        // rescale all object so they fit in the screen
         rescale(this.getObjects(), DEFAULT_MAX_MODEL_SIZE, new float[3]);
 
-        // fix coordinate system
         fixCoordinateSystem();
     }
 
+    /**********************************************************************************************/
     private void rescale(List<Object3DData> objs) {
         Log.v("SceneLoader", "Rescaling objects... " + objs.size());
 
-        // get largest object in scene
         float largest = 1;
+
         for (int i = 0; i < objs.size(); i++) {
             Object3DData data = objs.get(i);
             float candidate = data.getCurrentDimensions().getLargest();
@@ -661,18 +590,19 @@ public class SceneLoader implements LoadListener, EventListener {
                 largest = candidate;
             }
         }
+
         Log.v("SceneLoader", "Object largest dimension: " + largest);
 
-        // rescale objects
         float ratio = DEFAULT_MAX_MODEL_SIZE / largest;
         Log.v("SceneLoader", "Scaling " + objs.size() + " objects with factor: " + ratio);
         float[] newScale = new float[]{ratio, ratio, ratio};
+
         for (Object3DData data : objs) {
-            // data.center();
             data.setScale(newScale);
         }
     }
 
+    /**********************************************************************************************/
     @Override
     public void onLoadError(Exception ex) {
         Log.e("SceneLoader", ex.getMessage(), ex);
@@ -680,38 +610,42 @@ public class SceneLoader implements LoadListener, EventListener {
         ContentUtils.setThreadActivity(null);
     }
 
+    /**********************************************************************************************/
     public Object3DData getSelectedObject() {
         return selectedObject;
     }
 
+    /**********************************************************************************************/
     private void setSelectedObject(Object3DData selectedObject) {
         this.selectedObject = selectedObject;
     }
 
+    /**********************************************************************************************/
     public void loadTexture(Object3DData obj, Uri uri) throws IOException {
         if (obj == null && objects.size() != 1) {
             makeToastText("Unavailable", Toast.LENGTH_SHORT);
             return;
         }
         obj = obj != null ? obj : objects.get(0);
-
-        // load new texture
+        /**********************************************************************************************/
         obj.setTextureData(IOUtils.read(ContentUtils.getInputStream(uri)));
 
         this.drawTextures = true;
     }
 
+    /**********************************************************************************************/
     public final boolean isRotatingLight() {
         return rotatingLight;
     }
 
+    /**********************************************************************************************/
     public void setView(ModelSurfaceView view) {
         this.glView = view;
     }
 
+    /**********************************************************************************************/
     @Override
     public boolean onEvent(EventObject event) {
-        //Log.v("SceneLoader","Processing event... "+event);
         if (event instanceof TouchEvent) {
             userHasInteracted = true;
         } else if (event instanceof CollisionEvent) {
@@ -734,17 +668,14 @@ public class SceneLoader implements LoadListener, EventListener {
         return true;
     }
 
+    /**********************************************************************************************/
     private void rescale(List<Object3DData> datas, float newScale, float[] newPosition) {
-
-        //if (true) return;
-
-        // check we have objects to scale, otherwise, there should be an issue with LoaderTask
         if (datas == null || datas.isEmpty()) {
             return;
         }
 
         Log.d("SceneLoader", "Scaling datas... total: " + datas.size());
-        // calculate the global max length
+
         final Object3DData firstObject = datas.get(0);
         final Dimensions currentDimensions;
         if (this.originalDimensions.containsKey(firstObject)) {
@@ -756,8 +687,8 @@ public class SceneLoader implements LoadListener, EventListener {
         Log.v("SceneLoader", "Model[0] dimension: " + currentDimensions.toString());
 
         final float[] corner01 = currentDimensions.getCornerLeftTopNearVector();
-        ;
         final float[] corner02 = currentDimensions.getCornerRightBottomFar();
+
         final float[] center01 = currentDimensions.getCenter();
 
         float maxLeft = corner01[0];
@@ -783,17 +714,20 @@ public class SceneLoader implements LoadListener, EventListener {
                 this.originalDimensions.put(obj, original);
             }
 
-
             Log.v("SceneLoader", "Model[" + i + "] '" + obj.getId() + "' dimension: " + original.toString());
+
             final float[] corner1 = original.getCornerLeftTopNearVector();
             final float[] corner2 = original.getCornerRightBottomFar();
             final float[] center = original.getCenter();
+
             float maxLeft2 = corner1[0];
             float maxTop2 = corner1[1];
             float maxNear2 = corner1[2];
             float maxRight2 = corner2[0];
             float maxBottom2 = corner2[1];
+
             float maxFar2 = corner2[2];
+
             float centerX = center[0];
             float centerY = center[1];
             float centerZ = center[2];
@@ -813,8 +747,10 @@ public class SceneLoader implements LoadListener, EventListener {
         float lengthZ = maxNear - maxFar;
 
         float maxLength = lengthX;
+
         if (lengthY > maxLength) maxLength = lengthY;
         if (lengthZ > maxLength) maxLength = lengthZ;
+
         Log.v("SceneLoader", "Max length: " + maxLength);
 
         float maxLocation = 0;
@@ -823,30 +759,32 @@ public class SceneLoader implements LoadListener, EventListener {
             if (maxCenterY > maxLocation) maxLocation = maxCenterY;
             if (maxCenterZ > maxLocation) maxLocation = maxCenterZ;
         }
+
         Log.v("SceneLoader", "Max location: " + maxLocation);
 
-        // calculate the scale factor
         float scaleFactor = newScale / (maxLength + maxLocation);
         final float[] finalScale = new float[]{scaleFactor, scaleFactor, scaleFactor};
+
         Log.d("SceneLoader", "New scale: " + scaleFactor);
 
-        // calculate the global center
         float centerX = (maxRight + maxLeft) / 2;
         float centerY = (maxTop + maxBottom) / 2;
         float centerZ = (maxNear + maxFar) / 2;
+
         Log.d("SceneLoader", "Total center: " + centerX + "," + centerY + "," + centerZ);
 
-        // calculate the new location
         float translationX = -centerX + newPosition[0];
         float translationY = -centerY + newPosition[1];
         float translationZ = -centerZ + newPosition[2];
-        final float[] globalDifference = new float[]{translationX * scaleFactor, translationY * scaleFactor, translationZ * scaleFactor};
-        Log.d("SceneLoader", "Total translation: " + Arrays.toString(globalDifference));
 
+        final float[] globalDifference = new float[]{translationX * scaleFactor, translationY * scaleFactor, translationZ * scaleFactor};
+
+        Log.d("SceneLoader", "Total translation: " + Arrays.toString(globalDifference));
 
         for (Object3DData data : datas) {
 
             final Transform original;
+
             if (this.originalTransforms.containsKey(data)) {
                 original = this.originalTransforms.get(data);
                 Log.v("SceneLoader", "Found transform: " + original);
@@ -855,51 +793,25 @@ public class SceneLoader implements LoadListener, EventListener {
                 this.originalTransforms.put(data, original);
             }
 
-            // rescale
             float localScaleX = scaleFactor * original.getScale()[0];
             float localScaleY = scaleFactor * original.getScale()[1];
             float localScaleZ = scaleFactor * original.getScale()[2];
+
             data.setScale(new float[]{localScaleX, localScaleY, localScaleZ});
+
             Log.v("SceneLoader", "Mew model scale: " + Arrays.toString(data.getScale()));
 
-            // relocate
             float localTranlactionX = original.getLocation()[0] * scaleFactor;
             float localTranlactionY = original.getLocation()[1] * scaleFactor;
             float localTranlactionZ = original.getLocation()[2] * scaleFactor;
+
             data.setLocation(new float[]{localTranlactionX, localTranlactionY, localTranlactionZ});
+
             Log.v("SceneLoader", "Mew model location: " + Arrays.toString(data.getLocation()));
 
-            // center
             data.translate(globalDifference);
+
             Log.v("SceneLoader", "Mew model translated: " + Arrays.toString(data.getLocation()));
         }
-
-
-        /*for (Object3DData data : datas){
-            if (data instanceof AnimatedModel && ((AnimatedModel)data).getRootJoint() != null){
-                ((AnimatedModel) data).getRootJoint().setLocation(globalDifference);
-                ((AnimatedModel) data).getRootJoint().setScale(finalScale);
-                //data.setScale(null);
-                //data.setPosition(null);
-            } else {
-
-                // rescale
-                float localScaleX = scaleFactor * data.getScale()[0];
-                float localScaleY = scaleFactor * data.getScale()[1];
-                float localScaleZ = scaleFactor * data.getScale()[2];
-                data.setScale(new float[]{localScaleX, localScaleY, localScaleZ});
-
-                // relocate
-                float localTranlactionX = data.getLocation()[0] * scaleFactor;
-                float localTranlactionY = data.getLocation()[1] * scaleFactor;
-                float localTranlactionZ = data.getLocation()[2] * scaleFactor;
-                data.setLocation(new float[]{localTranlactionX, localTranlactionY, localTranlactionZ});
-
-                // center
-                data.translate(globalDifference);
-            }
-        }*/
     }
-
-
 }

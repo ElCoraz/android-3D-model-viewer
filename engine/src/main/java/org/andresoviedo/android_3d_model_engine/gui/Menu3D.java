@@ -8,18 +8,19 @@ import org.andresoviedo.util.io.IOUtils;
 
 import java.nio.FloatBuffer;
 import java.util.EventObject;
-
+/**************************************************************************************************/
 public class Menu3D extends Widget {
-
+    /**********************************************************************************************/
     public static final float ROW_HEIGHT = 1f;
     public static final float COL_WIDTH = 0.5f;
 
+    /**********************************************************************************************/
     public static class ItemSelected extends EventObject {
 
         private final String[] items;
         private final int selected;
 
-        ItemSelected(Object source, String[] items, int selected){
+        ItemSelected(Object source, String[] items, int selected) {
             super(source);
             this.items = items;
             this.selected = selected;
@@ -30,24 +31,30 @@ public class Menu3D extends Widget {
         }
     }
 
+    /**********************************************************************************************/
     private final static int GLYPH_SIZE = 18;
-
+    /**********************************************************************************************/
     private final String[] items;
+    /**********************************************************************************************/
     private final int totalGlyphs;
+    /**********************************************************************************************/
     private final float height;
+    /**********************************************************************************************/
     private final int rows;
     private final int cols;
-
+    /**********************************************************************************************/
     private boolean[] states;
+    /**********************************************************************************************/
     private int selected = -1;
 
+    /**********************************************************************************************/
     private Menu3D(String[] items, boolean[] states) {
         super();
         if (items == null || items.length == 0) throw new IllegalArgumentException();
 
         this.items = items;
         this.states = states;
-        // count total chars
+
         int max = 0;
         int count = 0;
         for (String item : items) {
@@ -59,23 +66,26 @@ public class Menu3D extends Widget {
         this.rows = this.items.length;
         this.height = rows * ROW_HEIGHT;
         this.init();
-        for (int i=0; i<items.length; i++) refresh(i);
+        for (int i = 0; i < items.length; i++) refresh(i);
     }
 
+    /**********************************************************************************************/
     public static Menu3D build(String[] items) {
-        return new Menu3D(items,new boolean[items.length]);
+        return new Menu3D(items, new boolean[items.length]);
     }
 
+    /**********************************************************************************************/
     public void setState(int idx, boolean state) {
         states[idx] = state;
         refresh(idx);
     }
 
-    private void refresh(int idx){
+    /**********************************************************************************************/
+    private void refresh(int idx) {
         float offsetX = COL_WIDTH * cols;
         float offsetY = (rows * ROW_HEIGHT) - ((idx + 1) * ROW_HEIGHT);
         int mark = GLYPH_SIZE * 3 * totalGlyphs + GLYPH_SIZE * 3 * idx;
-        int mark2 = GLYPH_SIZE * 4 * totalGlyphs + GLYPH_SIZE * 4 * idx ;
+        int mark2 = GLYPH_SIZE * 4 * totalGlyphs + GLYPH_SIZE * 4 * idx;
         getVertexBuffer().position(mark);
         getColorsBuffer().position(mark2);
         if (states[idx]) {
@@ -86,10 +96,10 @@ public class Menu3D extends Widget {
         setVertexBuffer(getVertexBuffer());
     }
 
+    /**********************************************************************************************/
     private void init() {
         try {
-            // allocate buffers
-            final int total = totalGlyphs + items.length + 1; // +1 for border
+            final int total = totalGlyphs + items.length + 1;
             final FloatBuffer vertexBuffer = IOUtils.createNativeByteBuffer(total * GLYPH_SIZE * 3 * 4).asFloatBuffer();
             final FloatBuffer colorBuffer = IOUtils.createNativeByteBuffer(total * GLYPH_SIZE * 4 * 4)
                     .asFloatBuffer();
@@ -140,11 +150,9 @@ public class Menu3D extends Widget {
 
             float totalWidth = cols * COL_WIDTH + COL_WIDTH;
 
-            Log.v("Menu3D","Size. width:"+ totalWidth +", height:"+height+", depth:"+ totalWidth);
+            Log.v("Menu3D", "Size. width:" + totalWidth + ", height:" + height + ", depth:" + totalWidth);
 
             buildBorder(vertexBuffer, colorBuffer, totalWidth, rows * ROW_HEIGHT);
-
-            //buildCube(vertexBuffer, colorBuffer, 0, getPosition(), totalWidth, height, totalWidth);
 
             fillArraysWithZero(vertexBuffer, colorBuffer);
 
@@ -155,22 +163,24 @@ public class Menu3D extends Widget {
         }
     }
 
+    /**********************************************************************************************/
     private static void buildCube(FloatBuffer resultVertexBuffer, FloatBuffer resultColorBuffer,
                                   int offset, float[] location, float width, float height, float depth) {
 
         resultVertexBuffer.put(location[0]).put(location[1]).put(location[2]);
         resultColorBuffer.put(1f).put(1f).put(1f).put(1f);
 
-        resultVertexBuffer.put(location[0]+width).put(location[1]).put(location[2]);
+        resultVertexBuffer.put(location[0] + width).put(location[1]).put(location[2]);
         resultColorBuffer.put(1f).put(1f).put(1f).put(1f);
 
-        resultVertexBuffer.put(location[0]+width).put(location[1]).put(location[2]-depth);
+        resultVertexBuffer.put(location[0] + width).put(location[1]).put(location[2] - depth);
         resultColorBuffer.put(1f).put(1f).put(1f).put(1f);
 
-        resultVertexBuffer.put(location[0]).put(location[1]).put(location[2]-depth);
+        resultVertexBuffer.put(location[0]).put(location[1]).put(location[2] - depth);
         resultColorBuffer.put(1f).put(1f).put(1f).put(1f);
     }
 
+    /**********************************************************************************************/
     @Override
     public boolean onEvent(EventObject event) {
         super.onEvent(event);
@@ -183,18 +193,20 @@ public class Menu3D extends Widget {
             y /= ROW_HEIGHT;
             int idx = items.length - 1 - (int) y;
 
-            Log.i("Menu3D","select: "+idx);
+            Log.i("Menu3D", "select: " + idx);
             fireEvent(new ItemSelected(this, items, idx));
         }
         return true;
     }
 
+    /**********************************************************************************************/
     private int getSelected() {
         return selected;
     }
 
+    /**********************************************************************************************/
     @Override
-    public void toggleVisible(){
+    public void toggleVisible() {
         if (isVisible()) {
             Log.i("Menu3D", "Hiding menu...");
 
@@ -211,7 +223,7 @@ public class Menu3D extends Widget {
             end.setVisible(false);
             animate(start, end, 250);
         } else {
-            Log.i("Menu3D", "Showing menu... parent> "+getParent()+","+getParent().getLocationX());
+            Log.i("Menu3D", "Showing menu... parent> " + getParent() + "," + getParent().getLocationX());
 
             JointTransform start = new JointTransform(new float[16]);
             start.setScale(new float[]{0, 0, 0});
@@ -226,9 +238,10 @@ public class Menu3D extends Widget {
         }
     }
 
+    /**********************************************************************************************/
     @Override
     public void setCurrentDimensions(Dimensions currentDimensions) {
         super.setCurrentDimensions(currentDimensions);
-        Log.d("Menu3D","new dimensions: "+ currentDimensions);
+        Log.d("Menu3D", "new dimensions: " + currentDimensions);
     }
 }
